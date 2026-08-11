@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quiz INPS 499 — Assistenti informatici</title>
+<script>try{var _t=localStorage.getItem('inps499-tema');if(_t&&_t!=='auto')document.documentElement.dataset.tema=_t;}catch(e){}</script>
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#1c1b19; --surface:#262521; --surface2:#2f2e29; --line:#3a3833;
+  --text:#e8e6e1; --muted:#a09c94; --accent:#5fd3a8; --accent-dim:#2f6b57;
+  --accent-hi:#7ce0bb; --on-accent:#12211c;
+  --ok:#5fd3a8; --ko:#e8785f; --warn:#e8c25f;
+}
+/* tema del sistema operativo, quando non c'è una scelta manuale */
+@media (prefers-color-scheme: light){
+  :root:not([data-tema="scuro"]){
+  color-scheme:light;
+  --bg:#faf8f4; --surface:#ffffff; --surface2:#f2efe8; --line:#ddd8cd;
+  --text:#26241f; --muted:#6b665c; --accent:#1a7f5f; --accent-dim:#d3efe3;
+  --accent-hi:#146a4f; --on-accent:#ffffff;
+  --ok:#1a7f5f; --ko:#bf3f26; --warn:#996d0d;
+  }
+}
+/* scelta manuale */
+:root[data-tema="chiaro"]{
+  color-scheme:light;
+  --bg:#faf8f4; --surface:#ffffff; --surface2:#f2efe8; --line:#ddd8cd;
+  --text:#26241f; --muted:#6b665c; --accent:#1a7f5f; --accent-dim:#d3efe3;
+  --accent-hi:#146a4f; --on-accent:#ffffff;
+  --ok:#1a7f5f; --ko:#bf3f26; --warn:#996d0d;
+}
+:root[data-tema="scuro"]{
+  color-scheme:dark;
+  --bg:#1c1b19; --surface:#262521; --surface2:#2f2e29; --line:#3a3833;
+  --text:#e8e6e1; --muted:#a09c94; --accent:#5fd3a8; --accent-dim:#2f6b57;
+  --accent-hi:#7ce0bb; --on-accent:#12211c;
+  --ok:#5fd3a8; --ko:#e8785f; --warn:#e8c25f;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--text);
+  font:16px/1.55 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  padding:24px 16px 64px;
+}
+.wrap{max-width:860px;margin:0 auto}
+h1{font-size:1.5rem;margin:0 0 4px;letter-spacing:-.01em}
+h2{font-size:1.15rem;margin:0 0 12px}
+h3{font-size:.95rem;margin:24px 0 8px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.sub{color:var(--muted);font-size:.9rem;margin:0 0 28px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px;margin-bottom:16px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:660px){.grid2{grid-template-columns:1fr}}
+button{font:inherit;cursor:pointer;border-radius:9px;border:1px solid var(--line);
+  background:var(--surface2);color:var(--text);padding:10px 16px;transition:.15s}
+button:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+button:disabled{opacity:.4;cursor:default}
+.primary{background:var(--accent);color:var(--on-accent);border-color:var(--accent);font-weight:600}
+.primary:hover:not(:disabled){background:var(--accent-hi);color:var(--on-accent);border-color:var(--accent-hi)}
+.ghost{background:transparent}
+select{font:inherit;background:var(--surface2);color:var(--text);border:1px solid var(--line);
+  border-radius:9px;padding:10px 12px;width:100%;margin-bottom:14px}
+label.chk{display:flex;gap:10px;align-items:flex-start;color:var(--muted);font-size:.88rem;cursor:pointer;margin-top:14px}
+label.chk input{margin-top:3px;accent-color:var(--accent);flex:none}
+.hide{display:none!important}
+.topbar{display:flex;justify-content:flex-end;margin-bottom:10px}
+.topbar button{padding:6px 12px;font-size:.82rem;color:var(--muted)}
+
+/* quiz */
+.bar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.timer{font-variant-numeric:tabular-nums;font-size:1.1rem;font-weight:600}
+.timer.low{color:var(--ko)}
+.qmeta{color:var(--muted);font-size:.82rem;margin-bottom:6px}
+.qtext{font-size:1.06rem;font-weight:600;margin:0 0 16px;line-height:1.45}
+.opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;
+  padding:12px 14px;margin-bottom:8px;background:var(--surface2);border:1px solid var(--line);border-radius:9px}
+.opt:hover{border-color:var(--accent)}
+.opt.sel{border-color:var(--accent);background:var(--accent-dim);color:var(--text)}
+.opt .l{font-weight:700;flex:none;width:1.2em}
+.nav{display:flex;gap:8px;justify-content:space-between;margin-top:20px}
+.dots{display:flex;flex-wrap:wrap;gap:5px;margin-top:20px;padding-top:18px;border-top:1px solid var(--line)}
+.dot{width:30px;height:30px;font-size:.75rem;padding:0;display:flex;align-items:center;justify-content:center}
+.dot.done{background:var(--accent-dim);border-color:var(--accent-dim);color:var(--text)}
+.dot.cur{border-color:var(--accent);color:var(--accent);font-weight:700}
+
+/* results */
+.score{font-size:2.6rem;font-weight:700;line-height:1;margin:0}
+.score small{font-size:1rem;font-weight:400;color:var(--muted)}
+.pct{font-size:1.1rem;color:var(--muted);margin:6px 0 0}
+table{width:100%;border-collapse:collapse;font-size:.9rem}
+th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line)}
+th{color:var(--muted);font-weight:600;font-size:.78rem;text-transform:uppercase;letter-spacing:.05em}
+td.num{text-align:right;font-variant-numeric:tabular-nums}
+.barrow{height:6px;background:var(--surface2);border-radius:3px;overflow:hidden;min-width:70px}
+.barrow i{display:block;height:100%;background:var(--accent)}
+.rev{border-left:3px solid var(--ko);padding:12px 0 12px 14px;margin-bottom:18px}
+.rev .qt{font-weight:600;margin-bottom:8px}
+.rev .a{font-size:.9rem;margin:3px 0}
+.rev .a.ko{color:var(--ko)}
+.rev .a.ok{color:var(--ok)}
+.rev .src{color:var(--muted);font-size:.78rem;margin-top:6px}
+.empty{color:var(--muted);font-size:.9rem}
+.t30box{margin-top:14px;padding-top:14px;border-top:1px solid var(--line);display:flex;
+  align-items:baseline;gap:12px;flex-wrap:wrap}
+.t30{font-size:1.6rem;font-weight:700;font-variant-numeric:tabular-nums}
+.t30.ok{color:var(--ok)} .t30.ko{color:var(--ko)}
+.t30lab{color:var(--muted);font-size:.88rem}
+.qs td{vertical-align:top}
+.qs .esito{width:1.4em;font-weight:700}
+.qs .esito.ok{color:var(--ok)} .qs .esito.ko{color:var(--ko)}
+.qs .qt{font-size:.88rem;line-height:1.4}
+.qs .ref{color:var(--muted);font-size:.75rem;display:block;margin-top:2px}
+.qs .rate{font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}
+.rate.r-lo{color:var(--ko)} .rate.r-mid{color:var(--warn)} .rate.r-hi{color:var(--ok)}
+.qs .att{color:var(--muted);font-size:.78rem;white-space:nowrap}
+.archbar{display:flex;justify-content:space-between;align-items:center;gap:12px;
+  flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.archbtns{display:flex;gap:8px;flex-wrap:wrap}
+.archbtns button{padding:7px 12px;font-size:.84rem}
+#archStatus{display:flex;align-items:center;gap:7px}
+#archStatus .led{width:8px;height:8px;border-radius:50%;background:var(--muted);flex:none}
+#archStatus.on .led{background:var(--ok)}
+#archStatus.warn .led{background:var(--warn)}
+code{background:var(--surface2);padding:1px 6px;border-radius:5px;font-size:.88em}
+details.card summary{cursor:pointer;font-weight:600;list-style:none}
+details.card summary::-webkit-details-marker{display:none}
+details.card summary::before{content:'▸ ';color:var(--accent)}
+details.card[open] summary::before{content:'▾ '}
+pre{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:14px;
+  overflow-x:auto;font-size:.8rem;line-height:1.5;margin:14px 0 0}
+.err{border-left-color:var(--ko)!important}
+.note{background:var(--surface2);border-left:3px solid var(--warn);padding:12px 14px;border-radius:0 8px 8px 0;
+  font-size:.86rem;color:var(--muted);margin-top:16px}
+.note b{color:var(--text)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="topbar"><button id="btnTema" onclick="cycleTema()" title="Cambia tema"></button></div>
+
+<!-- ===== LOADER ===== -->
+<section id="loader" class="hide">
+  <h1>Quiz INPS 499 — Assistenti informatici</h1>
+  <p class="sub">Banca dati delle domande non trovata.</p>
+  <div class="card">
+    <div class="note" style="margin-top:0">
+      <b>Le domande sono lette dal file <code>inps-quiz-questions.json</code>.</b> Così puoi integrarle o correggerle
+      senza toccare questa pagina. Aperta con un doppio clic, la pagina non può leggere il file da sola:
+      caricalo una volta col pulsante qui sotto e resterà in memoria. Servita via HTTP
+      (<code>python3 -m http.server</code> nella cartella) viene invece letta in automatico a ogni avvio.
+    </div>
+    <div class="archbtns" style="margin-top:16px">
+      <button class="primary" onclick="document.getElementById('qFile').click()">Carica inps-quiz-questions.json</button>
+      <button onclick="linkQuestions()">Collega inps-quiz-questions.json</button>
+    </div>
+    <div class="note err hide" id="loadErr"></div>
+  </div>
+  <details class="card">
+    <summary>Formato del file</summary>
+    <p class="empty" style="margin-bottom:0">Ogni domanda richiede <code>parte</code>, <code>sezione</code>,
+    <code>n</code>, <code>testo</code>, da 2 a 6 <code>options</code> e <code>risposta</code> con la lettera
+    corretta. Il campo <code>id</code> è facoltativo: se lo ometti viene ricavato da parte, sezione e numero,
+    ed è la chiave con cui vengono associate le statistiche storiche. L'elenco <code>parti</code> serve solo
+    a dare un titolo e un ordine: le parti non elencate vengono aggiunte in coda automaticamente.</p>
+<pre>{
+  "parti": [
+    { "id": "Parte I", "titolo": "Informatica di base e gestione di sistemi di backup e recovery" }
+  ],
+  "domande": [
+    {
+      "parte": "Parte I",
+      "sezione": "Capitolo 1 — Dai segnali elettrici agli algoritmi",
+      "n": 1,
+      "testo": "Un byte è composto da:",
+      "options": [
+        { "l": "A", "t": "2 bit" },
+        { "l": "B", "t": "4 bit" },
+        { "l": "C", "t": "8 bit" },
+        { "l": "D", "t": "16 bit" }
+      ],
+      "risposta": "C"
+    }
+  ]
+}</pre>
+  </details>
+</section>
+
+<!-- ===== HOME ===== -->
+<section id="home">
+  <h1>Quiz INPS 499 — Assistenti informatici</h1>
+  <p class="sub" id="homeSub"></p>
+
+  <div class="grid2">
+    <div class="card">
+      <h2>Per argomento</h2>
+      <p class="sub" style="margin-bottom:16px">Tutte le domande di una parte del manuale, in ordine casuale. Nessun limite di tempo.</p>
+      <select id="selParte"></select>
+      <button class="primary" onclick="startTopic()">Avvia quiz</button>
+    </div>
+
+    <div class="card">
+      <h2>Simulazione esame</h2>
+      <p class="sub" style="margin-bottom:16px">60 domande estratte da tutte le parti, con almeno una domanda per parte. Cronometro di 120 minuti.</p>
+      <button class="primary" onclick="startExam()">Avvia simulazione</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="note" style="margin-top:0">
+      <b>Le alternative sono sempre mescolate.</b> Nel manuale il 54% delle risposte corrette è la lettera B
+      (A 14%, C 27%, D 5%): conservare l'ordine originale porterebbe a memorizzare la posizione invece del
+      contenuto, con punteggi gonfiati.
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="archbar" style="margin-top:0;padding-top:0;border-top:none">
+      <span class="empty" id="bankStatus"><span class="led"></span><span id="bankLabel"></span></span>
+      <span class="archbtns">
+        <button onclick="document.getElementById('qFile').click()">Aggiorna domande</button>
+        <button id="btnQLink" onclick="linkQuestions()">Collega file</button>
+      </span>
+    </div>
+  </div>
+
+  <h3>Storico dei test</h3>
+  <div class="card">
+    <div id="histTable"></div>
+    <div class="archbar">
+      <span class="empty" id="archStatus"><span class="led"></span><span id="archLabel"></span></span>
+      <span class="archbtns">
+        <button id="btnLink" onclick="linkFile()">Collega file</button>
+        <button onclick="document.getElementById('impFile').click()">Importa archivio</button>
+        <button onclick="exportArch()">Esporta archivio</button>
+        <button class="ghost" onclick="clearHist()">Cancella</button>
+      </span>
+    </div>
+    <input type="file" id="impFile" accept=".json,application/json" class="hide" onchange="importArch(this)">
+  </div>
+</section>
+
+<!-- ===== QUIZ ===== -->
+<section id="quiz" class="hide">
+  <div class="bar">
+    <div><strong id="qTitle"></strong> <span class="qmeta" id="qProgress"></span></div>
+    <div class="timer" id="timer">00:00</div>
+  </div>
+  <div class="card">
+    <div class="qmeta" id="qSource"></div>
+    <p class="qtext" id="qText"></p>
+    <div id="qOpts"></div>
+    <div class="nav">
+      <button class="ghost" id="btnPrev" onclick="go(-1)">← Precedente</button>
+      <button class="ghost" id="btnNext" onclick="go(1)">Successiva →</button>
+    </div>
+    <div class="dots" id="dots"></div>
+  </div>
+  <div class="nav">
+    <button class="ghost" onclick="abandon()">Abbandona</button>
+    <button class="primary" onclick="submit(false)">Consegna</button>
+  </div>
+</section>
+
+<!-- ===== RESULTS ===== -->
+<section id="results" class="hide">
+  <div class="card">
+    <h2 id="rTitle"></h2>
+    <p class="score" id="rScore"></p>
+    <p class="pct" id="rPct"></p>
+    <div class="t30box hide" id="rT30"></div>
+  </div>
+  <div class="card" id="rParts"></div>
+  <div class="card hide" id="rQstats"></div>
+  <div class="nav" style="margin-bottom:24px">
+    <button class="ghost" onclick="home()">← Torna all'inizio</button>
+    <button class="primary" id="btnReview" onclick="startReview()">Ripassa gli errori</button>
+  </div>
+  <h3 id="rErrTitle">Errori</h3>
+  <div id="rErrors"></div>
+</section>
+
+<input type="file" id="qFile" accept=".json,application/json" class="hide" onchange="importQuestions(this)">
+</div>
+<script>
+let PARTI = [], DOMANDE = [];
+const AKEY = 'inps499-archivio';
+const QKEY = 'inps499-banca-domande';
+const FILENAME = 'inps-quiz-log.json';
+const QFILE = 'inps-quiz-questions.json';
+let fileHandle = null, pendingHandle = null, archSrc = 'memoria';
+let qHandle = null, qSrc = 'nessuna';
+
+let S = null, tick = null;
+
+/* ---------- utils ---------- */
+const $ = id => document.getElementById(id);
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]];}return a;}
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+function fmt30(v){ return (Math.round(v*100)/100).toFixed(2).replace(/\.?0+$/,'').replace('.',','); }
+function mmss(s){const m=Math.floor(s/60),x=s%60;return String(m).padStart(2,'0')+':'+String(x).padStart(2,'0');}
+function show(id){['loader','home','quiz','results'].forEach(s=>$(s).classList.toggle('hide',s!==id));window.scrollTo(0,0);}
+
+/* ---------- tema ---------- */
+const TKEY = 'inps499-tema';
+const TEMI = ['auto','chiaro','scuro'];
+const TLAB = {auto:'Tema automatico', chiaro:'Tema chiaro', scuro:'Tema scuro'};
+function getTema(){ try{ const v = localStorage.getItem(TKEY); return TEMI.includes(v) ? v : 'auto'; }
+                    catch(e){ return 'auto'; } }
+function applyTema(t){
+  const r = document.documentElement;
+  if(t === 'auto') delete r.dataset.tema; else r.dataset.tema = t;
+  $('btnTema').textContent = TLAB[t];
+}
+function cycleTema(){
+  const t = TEMI[(TEMI.indexOf(getTema()) + 1) % TEMI.length];
+  try{ localStorage.setItem(TKEY, t); }catch(e){}
+  applyTema(t);
+}
+applyTema(getTema());
+
+/* ---------- banca dati ---------- */
+function validate(d){
+  const e = [];
+  if(!d || typeof d !== 'object') return ['Il file non contiene un oggetto JSON.'];
+  if(!Array.isArray(d.domande) || !d.domande.length) return ["Manca l'elenco \"domande\" oppure è vuoto."];
+  d.domande.forEach((q,i) => {
+    const at = `domanda #${i+1}` + (q && q.n ? ` (${q.parte||'?'}, n. ${q.n})` : '');
+    if(!q || typeof q !== 'object'){ e.push(`${at}: non è un oggetto`); return; }
+    if(!q.parte)  e.push(`${at}: manca "parte"`);
+    if(!q.sezione) e.push(`${at}: manca "sezione"`);
+    if(typeof q.n !== 'number') e.push(`${at}: "n" deve essere un numero`);
+    if(!q.testo || !String(q.testo).trim()) e.push(`${at}: "testo" vuoto`);
+    if(!Array.isArray(q.options) || q.options.length < 2 || q.options.length > 6){
+      e.push(`${at}: servono da 2 a 6 alternative`); return;
+    }
+    const L = q.options.map(o => o && o.l);
+    if(new Set(L).size !== L.length) e.push(`${at}: lettere delle alternative duplicate`);
+    if(q.options.some(o => !o || !o.t || !String(o.t).trim())) e.push(`${at}: alternativa senza testo`);
+    if(!L.includes(q.risposta)) e.push(`${at}: "risposta" (${q.risposta}) non corrisponde a nessuna alternativa`);
+  });
+  return e;
+}
+
+function setData(d, src){
+  DOMANDE = d.domande;
+  const noti = new Set();
+  PARTI = (Array.isArray(d.parti) ? d.parti : []).filter(p => p && p.id && !noti.has(p.id) && noti.add(p.id));
+  DOMANDE.forEach(q => { if(!noti.has(q.parte)){ noti.add(q.parte);
+    PARTI.push({id:q.parte, titolo:q.titoloParte || q.parte}); } });
+  PARTI = PARTI.filter(p => DOMANDE.some(q => q.parte === p.id));
+  qSrc = src;
+  try{ localStorage.setItem(QKEY, JSON.stringify({parti:PARTI, domande:DOMANDE})); }catch(e){}
+  renderHome();
+}
+
+function renderHome(){
+  const counts = {};
+  DOMANDE.forEach(q => counts[q.parte] = (counts[q.parte]||0)+1);
+  $('homeSub').textContent = `${DOMANDE.length} domande da ${PARTI.length} parti del manuale.`;
+  $('selParte').innerHTML = PARTI.map(p =>
+    `<option value="${esc(p.id)}">${esc(p.id)} — ${esc(p.titolo)} (${counts[p.id]})</option>`).join('');
+  const el = $('bankStatus'), lab = $('bankLabel'), btn = $('btnQLink');
+  const testo = {
+    collegata:  [`Domande da ${qHandle ? qHandle.name : QFILE} · rilette a ogni avvio`, 'on',   'Cambia file'],
+    affiancata: [`Domande da ${QFILE} accanto alla pagina`,                             'on',   'Collega file'],
+    caricata:   [`Domande caricate dal file scelto`,                                    'on',   'Collega file'],
+    memoria:    [`Domande dalla copia in memoria · premi "Aggiorna domande" dopo averle modificate`, 'warn', 'Collega file']
+  }[qSrc] || ['', '', 'Collega file'];
+  lab.textContent = testo[0]; el.className = 'empty ' + testo[1]; btn.textContent = testo[2];
+}
+
+function showLoadError(errs){
+  const box = $('loadErr');
+  box.classList.remove('hide');
+  box.innerHTML = `<b>Il file non è utilizzabile:</b><br>` +
+    errs.slice(0,8).map(esc).join('<br>') +
+    (errs.length > 8 ? `<br>… e altri ${errs.length-8} problemi.` : '');
+}
+
+async function useData(d, src){
+  const errs = validate(d);
+  if(errs.length){ showLoadError(errs); return false; }
+  setData(d, src); $('loadErr').classList.add('hide');
+  await initArch(); show('home'); return true;
+}
+
+function importQuestions(input){
+  const f = input.files && input.files[0]; if(!f) return;
+  const rd = new FileReader();
+  rd.onload = async () => {
+    let d; try{ d = JSON.parse(rd.result); }
+    catch(e){ showLoadError(['JSON non valido: ' + e.message]); show('loader'); input.value=''; return; }
+    const ok = await useData(d, 'caricata');
+    if(!ok) show('loader');
+    input.value = '';
+  };
+  rd.readAsText(f);
+}
+
+async function linkQuestions(){
+  if(!window.showOpenFilePicker){
+    alert('Il browser non consente di collegare un file (serve Chrome o Edge su http://localhost o https).\n\n' +
+          'Usa "Carica inps-quiz-questions.json": la banca dati resta in memoria per le prossime aperture.');
+    return;
+  }
+  try{
+    const [h] = await showOpenFilePicker({ types:[{description:'Banca dati quiz', accept:{'application/json':['.json']}}] });
+    qHandle = h; await idbSet('qhandle', h);
+    const d = JSON.parse(await (await h.getFile()).text());
+    if(!(await useData(d, 'collegata'))) { qHandle = null; show('loader'); }
+  }catch(e){}
+}
+
+/* ---------- avvio ---------- */
+(async function(){
+  // 1. file collegato
+  if(window.showOpenFilePicker && window.indexedDB){
+    const h = await idbGet('qhandle');
+    if(h){
+      let p = 'prompt';
+      try{ p = await h.queryPermission({mode:'read'}); }catch(e){}
+      if(p === 'granted'){
+        try{ qHandle = h;
+             if(await useData(JSON.parse(await (await h.getFile()).text()), 'collegata')) return;
+        }catch(e){ qHandle = null; }
+      }
+    }
+  }
+  // 2. file affiancato, via HTTP
+  try{
+    const r = await fetch(QFILE, {cache:'no-store'});
+    if(r.ok && await useData(await r.json(), 'affiancata')) return;
+  }catch(e){}
+  // 3. copia in memoria dall'ultimo caricamento
+  try{
+    const c = JSON.parse(localStorage.getItem(QKEY));
+    if(c && await useData(c, 'memoria')) return;
+  }catch(e){}
+  // 4. nessuna banca dati
+  show('loader');
+})();
+
+/* ---------- build ---------- */
+function prep(list){
+  return list.map(q => {
+    const opts = shuffle(q.options);
+    return {q, opts, correct: q.options.find(o => o.l === q.risposta)};
+  });
+}
+
+function startTopic(){
+  const p = $('selParte').value;
+  const pool = DOMANDE.filter(q => q.parte === p);
+  begin(prep(shuffle(pool)), p, 'topic', 0);
+}
+
+function startExam(){
+  const byPart = {};
+  DOMANDE.forEach(q => (byPart[q.parte] = byPart[q.parte] || []).push(q));
+  const picked = [], used = new Set();
+  // almeno una domanda per parte
+  PARTI.forEach(p => {
+    const pool = byPart[p.id];
+    if(!pool || !pool.length) return;
+    const q = pool[Math.random()*pool.length|0];
+    picked.push(q); used.add(q);
+  });
+  // completa fino a 60
+  const rest = shuffle(DOMANDE.filter(q => !used.has(q)));
+  while(picked.length < 60 && rest.length) picked.push(rest.pop());
+  begin(prep(shuffle(picked)), 'Simulazione esame', 'exam', 120*60);
+}
+
+function startReview(){
+  const wrong = S.items.filter((it,i) => S.answers[i] !== it.correct.l);
+  if(!wrong.length) return;
+  begin(prep(shuffle(wrong.map(w => w.q))), 'Ripasso errori', 'review', 0);
+}
+
+function begin(items, title, mode, limit){
+  S = {items, title, mode, limit, idx:0, answers:{}, elapsed:0, t0:Date.now()};
+  $('qTitle').textContent = title;
+  show('quiz'); render();
+  clearInterval(tick);
+  tick = setInterval(() => {
+    S.elapsed = Math.floor((Date.now()-S.t0)/1000);
+    if(S.limit){
+      const left = S.limit - S.elapsed;
+      $('timer').textContent = mmss(Math.max(0,left));
+      $('timer').classList.toggle('low', left <= 600);
+      if(left <= 0) submit(true);
+    } else $('timer').textContent = mmss(S.elapsed);
+  }, 250);
+}
+
+/* ---------- render ---------- */
+function render(){
+  const it = S.items[S.idx], q = it.q;
+  $('qProgress').textContent = `${S.idx+1} di ${S.items.length}`;
+  $('qSource').textContent = q.parte + ' · ' + q.sezione.replace(/^Quiz \| /,'') + ' · n. ' + q.n;
+  $('qText').textContent = q.testo;
+  $('qOpts').innerHTML = it.opts.map((o,i) =>
+    `<button class="opt ${S.answers[S.idx]===o.l?'sel':''}" onclick="pick('${o.l}')">
+       <span class="l">${String.fromCharCode(65+i)}.</span><span>${esc(o.t)}</span></button>`).join('');
+  $('btnPrev').disabled = S.idx===0;
+  $('btnNext').disabled = S.idx===S.items.length-1;
+  $('dots').innerHTML = S.items.map((_,i) =>
+    `<button class="dot ${S.answers[i]?'done':''} ${i===S.idx?'cur':''}" onclick="jump(${i})">${i+1}</button>`).join('');
+}
+function pick(l){ S.answers[S.idx]=l; if(S.idx<S.items.length-1){S.idx++;} render(); }
+function go(d){ S.idx=Math.min(S.items.length-1,Math.max(0,S.idx+d)); render(); }
+function jump(i){ S.idx=i; render(); }
+function abandon(){ if(confirm('Abbandonare il test in corso? I risultati non verranno salvati.')){clearInterval(tick);home();} }
+
+/* ---------- submit ---------- */
+function submit(auto){
+  const unanswered = S.items.length - Object.keys(S.answers).length;
+  if(!auto && unanswered > 0 &&
+     !confirm(`Ci sono ancora ${unanswered} domande senza risposta. Consegnare comunque?`)) return;
+  clearInterval(tick);
+
+  let ok = 0; const perPart = {};
+  S.items.forEach((it,i) => {
+    const good = S.answers[i] === it.correct.l;
+    if(good) ok++;
+    const p = it.q.parte;
+    perPart[p] = perPart[p] || {ok:0, tot:0};
+    perPart[p].tot++; if(good) perPart[p].ok++;
+  });
+  const tot = S.items.length, pct = Math.round(ok/tot*1000)/10;
+  const t30 = Math.round(ok/tot*30*100)/100;
+
+  $('rTitle').textContent = S.title + (auto ? ' — tempo scaduto' : '');
+  $('rScore').innerHTML = `${ok} <small>/ ${tot} corrette</small>`;
+  $('rPct').textContent = `${pct}% · ${tot-ok} errate · tempo ${mmss(S.elapsed)}`;
+  const box = $('rT30');
+  if(S.mode === 'exam'){
+    const pass = t30 >= 21;
+    box.classList.remove('hide');
+    box.innerHTML = `<span class="t30 ${pass?'ok':'ko'}">${fmt30(t30)} / 30</span>
+      <span class="t30lab">${pass?'sopra la soglia di idoneità':'sotto la soglia di idoneità'} · 21/30</span>`;
+  } else box.classList.add('hide');
+
+  $('rParts').innerHTML = '<h3 style="margin-top:0">Risultato per parte</h3><table><tbody>' +
+    PARTI.filter(p => perPart[p.id]).map(p => {
+      const d = perPart[p.id], w = Math.round(d.ok/d.tot*100);
+      return `<tr><td>${esc(p.id)}</td>
+        <td style="width:40%"><div class="barrow"><i style="width:${w}%"></i></div></td>
+        <td class="num">${d.ok}/${d.tot}</td></tr>`;
+    }).join('') + '</tbody></table>';
+
+  const errs = S.items.map((it,i) => ({it, given:S.answers[i]})).filter(e => e.given !== e.it.correct.l);
+  $('btnReview').classList.toggle('hide', errs.length===0);
+  $('rErrTitle').textContent = errs.length ? `Errori (${errs.length})` : 'Nessun errore';
+  $('rErrors').innerHTML = errs.length ? errs.map(e => {
+    const g = e.given ? e.it.opts.find(o => o.l===e.given) : null;
+    return `<div class="rev">
+      <div class="qt">${esc(e.it.q.testo)}</div>
+      <div class="a ko">✗ ${g ? esc(g.t) : 'nessuna risposta data'}</div>
+      <div class="a ok">✓ ${esc(e.it.correct.t)}</div>
+      <div class="src">${esc(e.it.q.parte)} · ${esc(e.it.q.sezione.replace(/^Quiz \| /,''))} · domanda n. ${e.it.q.n}</div>
+    </div>`;
+  }).join('') : '<p class="empty">Tutte le risposte sono corrette.</p>';
+
+  const a = loadArch();
+  a.test.unshift({
+    id: new Date().toISOString(), mode: S.mode, title: S.title,
+    ok, tot, pct, sec: S.elapsed, t30: S.mode === 'exam' ? t30 : null,
+    esiti: S.items.map((it,i) => [qkey(it.q), S.answers[i] === it.correct.l ? 1 : 0])
+  });
+  saveArch(a);
+  renderQStats();
+  show('results');
+}
+
+/* ---------- archivio ---------- */
+function emptyArch(){ return {app:'quiz-inps-499', versione:1, aggiornato:null, test:[]}; }
+
+function loadArch(){
+  try{ const a = JSON.parse(localStorage.getItem(AKEY));
+       return (a && Array.isArray(a.test)) ? a : emptyArch(); }
+  catch(e){ return emptyArch(); }
+}
+function stashArch(a){ localStorage.setItem(AKEY, JSON.stringify(a)); }
+function saveArch(a){
+  a.aggiornato = new Date().toISOString();
+  stashArch(a); writeFile(a); renderHist();
+}
+/* unione idempotente: i test sono identificati dall'istante di consegna */
+function mergeArch(base, inc){
+  const seen = new Set(base.test.map(t => t.id));
+  let added = 0;
+  (inc && Array.isArray(inc.test) ? inc.test : []).forEach(r => {
+    if(r && r.id && !seen.has(r.id)){ base.test.push(r); seen.add(r.id); added++; }
+  });
+  base.test.sort((x,y) => String(y.id).localeCompare(String(x.id)));
+  return added;
+}
+/* recupera i dati salvati con le versioni precedenti */
+function migrateOld(){
+  const H = localStorage.getItem('inps499-quiz-storico');
+  if(!H) return;
+  try{
+    const a = loadArch(), seen = new Set(a.test.map(t => t.id));
+    JSON.parse(H).forEach(r => {
+      if(r && r.d && !seen.has(r.d)) a.test.push({...r, id:r.d, esiti:[]});
+    });
+    a.test.sort((x,y) => String(y.id).localeCompare(String(x.id)));
+    stashArch(a);
+  }catch(e){}
+  localStorage.removeItem('inps499-quiz-storico');
+  localStorage.removeItem('inps499-quiz-statistiche');
+}
+
+/* ---------- file su disco ---------- */
+function idb(){ return new Promise((res,rej)=>{
+  const r = indexedDB.open('inps499', 1);
+  r.onupgradeneeded = () => r.result.createObjectStore('kv');
+  r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+}); }
+async function idbGet(k){ try{ const d = await idb();
+  return await new Promise(res => { const q = d.transaction('kv').objectStore('kv').get(k);
+    q.onsuccess = () => res(q.result); q.onerror = () => res(null); }); }catch(e){ return null; } }
+async function idbSet(k,v){ try{ const d = await idb();
+  d.transaction('kv','readwrite').objectStore('kv').put(v,k); }catch(e){} }
+
+async function writeFile(a){
+  if(!fileHandle) return;
+  try{ const w = await fileHandle.createWritable();
+       await w.write(JSON.stringify(a, null, 1)); await w.close(); }
+  catch(e){ fileHandle = null; archSrc = 'memoria'; renderArch(); }
+}
+
+async function linkFile(){
+  try{
+    if(pendingHandle){
+      const p = await pendingHandle.requestPermission({mode:'readwrite'});
+      if(p === 'granted'){ fileHandle = pendingHandle; pendingHandle = null;
+        await readFromHandle(fileHandle); archSrc = 'file'; renderArch(); renderHist(); return; }
+      return;
+    }
+    if(!window.showSaveFilePicker){
+      alert('Il browser non consente di collegare un file (serve Chrome o Edge su http://localhost o https).\n\n' +
+            'Usa "Esporta archivio" per salvare il file e "Importa archivio" per ricaricarlo.');
+      return;
+    }
+    fileHandle = await showSaveFilePicker({ suggestedName: FILENAME,
+      types:[{description:'Archivio quiz', accept:{'application/json':['.json']}}] });
+    await idbSet('handle', fileHandle);
+    await writeFile(loadArch());
+    archSrc = 'file'; renderArch();
+  }catch(e){}
+}
+
+async function readFromHandle(h){
+  try{ const inc = JSON.parse(await (await h.getFile()).text());
+       const a = loadArch(); mergeArch(a, inc); stashArch(a); }catch(e){}
+}
+
+/* all'avvio: file collegato -> file affiancato -> sola memoria */
+async function initArch(){
+  migrateOld();
+  if(window.showSaveFilePicker && window.indexedDB){
+    const h = await idbGet('handle');
+    if(h){
+      let p = 'prompt';
+      try{ p = await h.queryPermission({mode:'readwrite'}); }catch(e){}
+      if(p === 'granted'){ fileHandle = h; await readFromHandle(h); archSrc = 'file'; }
+      else { pendingHandle = h; archSrc = 'sospeso'; }
+    }
+  }
+  if(!fileHandle && archSrc !== 'sospeso'){
+    try{
+      const r = await fetch(FILENAME, {cache:'no-store'});
+      if(r.ok){ const a = loadArch();
+        if(mergeArch(a, await r.json()) >= 0){ stashArch(a); archSrc = 'affiancato'; } }
+    }catch(e){}
+  }
+  renderArch(); renderHist();
+}
+
+function renderArch(){
+  const el = $('archStatus'), lab = $('archLabel'), btn = $('btnLink');
+  el.className = 'empty' + (archSrc === 'file' ? ' on' : (archSrc === 'sospeso' ? ' warn' : ''));
+  btn.textContent = 'Collega file';
+  if(archSrc === 'file'){
+    lab.textContent = `Archivio su ${fileHandle.name} · salvataggio automatico`;
+    btn.textContent = 'Cambia file';
+  } else if(archSrc === 'sospeso'){
+    lab.textContent = 'File archivio da riautorizzare';
+    btn.textContent = 'Riconnetti file';
+  } else if(archSrc === 'affiancato'){
+    lab.textContent = `Caricato da ${FILENAME} · esporta per salvare le novità`;
+  } else {
+    lab.textContent = 'Solo memoria del browser · esporta per creare il file';
+  }
+}
+
+/* ---------- import / export ---------- */
+function exportArch(){
+  const a = loadArch();
+  a.aggiornato = new Date().toISOString();
+  const url = URL.createObjectURL(new Blob([JSON.stringify(a, null, 1)], {type:'application/json'}));
+  const el = document.createElement('a');
+  el.href = url; el.download = FILENAME; el.click();
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+function importArch(input){
+  const f = input.files && input.files[0];
+  if(!f) return;
+  const rd = new FileReader();
+  rd.onload = () => {
+    let inc;
+    try{ inc = JSON.parse(rd.result); }
+    catch(e){ alert('Il file non è un archivio JSON valido.'); input.value=''; return; }
+    if(!inc || !Array.isArray(inc.test)){ alert('Il file non contiene un archivio di test.'); input.value=''; return; }
+    const a = loadArch(), added = mergeArch(a, inc);
+    saveArch(a);
+    alert(added ? `Importati ${added} test (i duplicati sono stati ignorati).`
+                : 'Nessun test nuovo: l\'archivio era già aggiornato.');
+    input.value = '';
+  };
+  rd.readAsText(f);
+}
+
+/* ---------- statistiche per domanda (derivate dall'archivio) ---------- */
+function qkey(q){ return q.id || (q.parte + '|' + q.sezione + '|' + q.n); }
+function statsFromArch(){
+  const s = {};
+  loadArch().test.forEach(t => (t.esiti || []).forEach(([k, ok]) => {
+    const r = s[k] || (s[k] = {ok:0, tot:0}); r.tot++; if(ok) r.ok++;
+  }));
+  return s;
+}
+function rateClass(p){ return p < 50 ? 'r-lo' : (p < 80 ? 'r-mid' : 'r-hi'); }
+function renderQStats(){
+  const box = $('rQstats');
+  if(S.mode !== 'topic'){ box.classList.add('hide'); return; }
+  const st = statsFromArch();
+  const rows = S.items.map((it,i) => {
+    const r = st[qkey(it.q)] || {ok:0, tot:0};
+    return {it, good: S.answers[i] === it.correct.l, r, p: r.tot ? Math.round(r.ok/r.tot*100) : 0};
+  }).sort((a,b) => a.p - b.p || b.r.tot - a.r.tot);
+  box.classList.remove('hide');
+  box.innerHTML =
+    '<h3 style="margin-top:0">Percentuale di successo per domanda</h3>' +
+    '<p class="empty" style="margin:-4px 0 14px">Calcolata su tutti i test svolti, compreso questo. ' +
+    'Le domande con la percentuale più bassa sono in cima.</p>' +
+    '<table class="qs"><tbody>' + rows.map(r => `<tr>
+      <td class="esito ${r.good?'ok':'ko'}">${r.good?'✓':'✗'}</td>
+      <td class="qt">${esc(r.it.q.testo.length > 100 ? r.it.q.testo.slice(0,100)+'…' : r.it.q.testo)}
+        <span class="ref">${esc(r.it.q.sezione.replace(/^Quiz \| /,''))} · n. ${r.it.q.n}</span></td>
+      <td class="num rate ${rateClass(r.p)}">${r.p}%</td>
+      <td class="num att">${r.r.ok}/${r.r.tot}</td></tr>`).join('') + '</tbody></table>';
+}
+
+/* ---------- tabella storico ---------- */
+function clearHist(){
+  if(!confirm('Cancellare lo storico dei test e le statistiche per domanda?')) return;
+  const a = emptyArch(); saveArch(a);
+}
+function renderHist(){
+  const h = loadArch().test;
+  if(!h.length){ $('histTable').innerHTML = '<p class="empty">Nessun test svolto finora.</p>'; return; }
+  const rows = h.slice(0,15).map(r => {
+    const d = new Date(r.id);
+    const dd = d.toLocaleDateString('it-IT',{day:'2-digit',month:'2-digit',year:'2-digit'}) + ' ' +
+               d.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
+    const c30 = (r.t30 != null)
+      ? `<span style="color:${r.t30>=21?'var(--ok)':'var(--ko)'}">${fmt30(r.t30)}</span>` : '—';
+    return `<tr><td>${dd}</td><td>${esc(r.title)}</td>
+      <td style="width:24%"><div class="barrow"><i style="width:${r.pct}%"></i></div></td>
+      <td class="num">${r.ok}/${r.tot}</td><td class="num">${r.pct}%</td><td class="num">${c30}</td></tr>`;
+  }).join('');
+  const exams = h.filter(r => r.mode === 'exam' && r.t30 != null);
+  const avg = exams.length ? exams.reduce((s,r) => s + r.t30, 0) / exams.length : null;
+  $('histTable').innerHTML =
+    `<table><thead><tr><th>Data</th><th>Test</th><th></th><th class="num">Punti</th><th class="num">%</th><th class="num">/30</th></tr></thead>
+     <tbody>${rows}</tbody></table>
+     <p class="empty" style="margin:12px 0 0">${h.length} test svolti${avg!==null?` · media simulazioni ${fmt30(avg)}/30`:''}</p>`;
+}
+
+function home(){ clearInterval(tick); S=null; renderHist(); show('home'); }
+</script>
+</body>
+</html>
