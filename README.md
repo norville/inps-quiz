@@ -1,12 +1,22 @@
 # Quiz 'Concorso INPS 499 — Assistenti informatici'
 
+**→ [quiz.bassanim.com](https://quiz.bassanim.com/)**
+
 A practice app for the written exam of the Italian INPS public competition for 499
 Assistenti informatici. One HTML page, no dependencies, no installation and no server:
 the questions live in a JSON file next to the page, and everything runs in the browser.
 
 The app's interface and the question bank are in Italian.
 
-## Getting started
+## Using it
+
+Just open <https://quiz.bassanim.com/>. Nothing to install, no account, no sign-up.
+
+Your results are kept in your own browser and are never sent anywhere. That also means
+they don't follow you to another browser or device, and clearing the site's data erases
+them — see [Saving your results](#saving-your-results) for how to keep a copy.
+
+## Running it locally
 
 From the project folder:
 
@@ -14,12 +24,10 @@ From the project folder:
 python3 -m http.server
 ```
 
-then open <http://localhost:8000/inps-quiz-app.html>.
+then open <http://localhost:8000/>.
 
 The page also works if you just double-click it, but then the browser won't let it read
-the files sitting next to it: you have to load the questions once by hand with the
-«Carica inps-quiz-questions.json» button, after which they stay in memory. Served over
-HTTP, everything is picked up automatically on every start.
+the question bank sitting next to it, and it will offer you a file picker instead.
 
 ## Modes
 
@@ -53,22 +61,26 @@ in your browser and, if you want, in a file on your own disk.
 
 ### Saving your results
 
-In order of preference, the page tries:
+Results live in your browser by default. To keep them beyond that, you have two options:
 
 1. **Linked file** — with «Collega file» you choose once where the archive should live,
-   and from then on every test you hand in is written to it automatically. Requires
-   Chrome or Edge on `http://localhost` or `https`.
-2. **Sibling file** — an `inps-quiz-log.json` in the same folder is read on every
-   start; to save anything new you need «Esporta archivio».
-3. **Browser memory only** — always works, but clearing the site's data wipes
-   everything, so export from time to time.
+   and from then on every test you hand in is written to that file automatically. This is
+   the closest thing to real saving, and needs no thought afterwards. Chrome and Edge
+   only, and only over HTTPS or localhost.
+2. **Export and import** — «Esporta archivio» downloads a dated JSON file; «Importa
+   archivio» loads one back, on any browser and any machine. Importing merges rather than
+   replaces, and importing the same file twice adds nothing, so it is always safe to
+   re-import.
 
-The indicator light next to the buttons tells you which of the three you're in.
+The indicator light next to the buttons tells you which mode you're in. Firefox and
+Safari don't support linked files, so on those browsers use export/import.
 
-## Customising the questions
+## The question bank (for developers)
 
-The questions live in `inps-quiz-questions.json`, kept separate from the page precisely
-so you can fix or extend them without touching the code. The structure is:
+The questions live in `inps-quiz-questions.json`, kept separate from the page so they can
+be fixed or extended without touching the code. They are edited in the repository and
+published with the site — the app offers no way to change them from the browser. The
+structure is:
 
 ```json
 {
@@ -110,11 +122,16 @@ The included bank holds 602 questions across 13 parts.
 Light, dark, or automatic following your system settings, via the button in the top
 right corner. The choice is remembered.
 
+## Deployment
+
+The site is served by GitHub Pages from `main`, at the domain in the `CNAME` file. There
+is no build step: pushing to `main` publishes.
+
 ## Project files
 
 | File | Contents |
 | --- | --- |
-| `inps-quiz-app.html` | the whole application: markup, styles and logic |
+| `index.html` | the whole application: markup, styles and logic |
 | `inps-quiz-questions.json` | the question bank |
 | `inps-quiz-log.json` | the archive of tests taken, written by the app (not versioned) |
 
