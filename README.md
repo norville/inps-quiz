@@ -1,6 +1,6 @@
 # Quiz 'Concorso INPS 499 — Assistenti informatici'
 
-**→ [quiz.bassanim.com](https://quiz.bassanim.com/)**
+**→ [norville.github.io/inps-quiz](https://norville.github.io/inps-quiz/)**
 
 A practice app for the written exam of the Italian INPS public competition for 499
 Assistenti informatici. One HTML page, no dependencies, no installation and no server:
@@ -10,7 +10,8 @@ The app's interface and the question bank are in Italian.
 
 ## Using it
 
-Just open <https://quiz.bassanim.com/>. Nothing to install, no account, no sign-up.
+Just open <https://norville.github.io/inps-quiz/>. Nothing to install, no account, no
+sign-up.
 
 Your results are kept in your own browser and are never sent anywhere. That also means
 they don't follow you to another browser or device, and clearing the site's data erases
@@ -124,8 +125,9 @@ right corner. The choice is remembered.
 
 ## Deployment
 
-The site is served by GitHub Pages from `main`, at the domain in the `CNAME` file. There
-is no build step: pushing to `main` publishes.
+The site is served by GitHub Pages from `main`, at
+<https://norville.github.io/inps-quiz/>. There is no build step: pushing to `main`
+publishes.
 
 ## Project files
 
