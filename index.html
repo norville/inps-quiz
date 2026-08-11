@@ -144,17 +144,17 @@ pre{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:
 <!-- ===== LOADER ===== -->
 <section id="loader" class="hide">
   <h1>Quiz INPS 499 — Assistenti informatici</h1>
-  <p class="sub">Banca dati delle domande non trovata.</p>
+  <p class="sub">Banca dati delle domande non disponibile.</p>
   <div class="card">
     <div class="note" style="margin-top:0">
-      <b>Le domande sono lette dal file <code>inps-quiz-questions.json</code>.</b> Così puoi integrarle o correggerle
-      senza toccare questa pagina. Aperta con un doppio clic, la pagina non può leggere il file da sola:
-      caricalo una volta col pulsante qui sotto e resterà in memoria. Servita via HTTP
-      (<code>python3 -m http.server</code> nella cartella) viene invece letta in automatico a ogni avvio.
+      <b>Le domande sono lette dal file <code>inps-quiz-questions.json</code> accanto alla pagina.</b>
+      Se stai vedendo questo messaggio sul sito, il file non è raggiungibile: riprova più tardi.
+      Se hai aperto la pagina con un doppio clic da disco, il browser non le permette di leggere il
+      file da sola: servila via HTTP (<code>python3 -m http.server</code> nella cartella) oppure
+      caricala a mano col pulsante qui sotto.
     </div>
     <div class="archbtns" style="margin-top:16px">
-      <button class="primary" onclick="document.getElementById('qFile').click()">Carica inps-quiz-questions.json</button>
-      <button onclick="linkQuestions()">Collega inps-quiz-questions.json</button>
+      <button class="primary" onclick="document.getElementById('qFile').click()">Carica il file delle domande</button>
     </div>
     <div class="note err hide" id="loadErr"></div>
   </div>
@@ -216,19 +216,14 @@ pre{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:
     </div>
   </div>
 
-  <div class="card">
-    <div class="archbar" style="margin-top:0;padding-top:0;border-top:none">
-      <span class="empty" id="bankStatus"><span class="led"></span><span id="bankLabel"></span></span>
-      <span class="archbtns">
-        <button onclick="document.getElementById('qFile').click()">Aggiorna domande</button>
-        <button id="btnQLink" onclick="linkQuestions()">Collega file</button>
-      </span>
-    </div>
-  </div>
-
   <h3>Storico dei test</h3>
   <div class="card">
     <div id="histTable"></div>
+    <div class="note">
+      <b>I risultati restano in questo browser.</b> Non vengono inviati da nessuna parte. Se cancelli i dati
+      del sito, o passi a un altro browser o a un altro dispositivo, spariscono: usa «Esporta archivio» per
+      tenerne una copia, oppure «Collega file» per salvarli in automatico in un file sul tuo computer.
+    </div>
     <div class="archbar">
       <span class="empty" id="archStatus"><span class="led"></span><span id="archLabel"></span></span>
       <span class="archbtns">
@@ -291,7 +286,6 @@ const QKEY = 'inps499-banca-domande';
 const FILENAME = 'inps-quiz-log.json';
 const QFILE = 'inps-quiz-questions.json';
 let fileHandle = null, pendingHandle = null, archSrc = 'memoria';
-let qHandle = null, qSrc = 'nessuna';
 
 let S = null, tick = null;
 
@@ -344,14 +338,13 @@ function validate(d){
   return e;
 }
 
-function setData(d, src){
+function setData(d){
   DOMANDE = d.domande;
   const noti = new Set();
   PARTI = (Array.isArray(d.parti) ? d.parti : []).filter(p => p && p.id && !noti.has(p.id) && noti.add(p.id));
   DOMANDE.forEach(q => { if(!noti.has(q.parte)){ noti.add(q.parte);
     PARTI.push({id:q.parte, titolo:q.titoloParte || q.parte}); } });
   PARTI = PARTI.filter(p => DOMANDE.some(q => q.parte === p.id));
-  qSrc = src;
   try{ localStorage.setItem(QKEY, JSON.stringify({parti:PARTI, domande:DOMANDE})); }catch(e){}
   renderHome();
 }
@@ -362,14 +355,6 @@ function renderHome(){
   $('homeSub').textContent = `${DOMANDE.length} domande da ${PARTI.length} parti del manuale.`;
   $('selParte').innerHTML = PARTI.map(p =>
     `<option value="${esc(p.id)}">${esc(p.id)} — ${esc(p.titolo)} (${counts[p.id]})</option>`).join('');
-  const el = $('bankStatus'), lab = $('bankLabel'), btn = $('btnQLink');
-  const testo = {
-    collegata:  [`Domande da ${qHandle ? qHandle.name : QFILE} · rilette a ogni avvio`, 'on',   'Cambia file'],
-    affiancata: [`Domande da ${QFILE} accanto alla pagina`,                             'on',   'Collega file'],
-    caricata:   [`Domande caricate dal file scelto`,                                    'on',   'Collega file'],
-    memoria:    [`Domande dalla copia in memoria · premi "Aggiorna domande" dopo averle modificate`, 'warn', 'Collega file']
-  }[qSrc] || ['', '', 'Collega file'];
-  lab.textContent = testo[0]; el.className = 'empty ' + testo[1]; btn.textContent = testo[2];
 }
 
 function showLoadError(errs){
@@ -380,66 +365,36 @@ function showLoadError(errs){
     (errs.length > 8 ? `<br>… e altri ${errs.length-8} problemi.` : '');
 }
 
-async function useData(d, src){
+async function useData(d){
   const errs = validate(d);
   if(errs.length){ showLoadError(errs); return false; }
-  setData(d, src); $('loadErr').classList.add('hide');
+  setData(d); $('loadErr').classList.add('hide');
   await initArch(); show('home'); return true;
 }
 
+/* ripiego per la pagina aperta da disco: la banca dati non è raggiungibile via fetch */
 function importQuestions(input){
   const f = input.files && input.files[0]; if(!f) return;
   const rd = new FileReader();
   rd.onload = async () => {
     let d; try{ d = JSON.parse(rd.result); }
     catch(e){ showLoadError(['JSON non valido: ' + e.message]); show('loader'); input.value=''; return; }
-    const ok = await useData(d, 'caricata');
-    if(!ok) show('loader');
+    if(!await useData(d)) show('loader');
     input.value = '';
   };
   rd.readAsText(f);
 }
 
-async function linkQuestions(){
-  if(!window.showOpenFilePicker){
-    alert('Il browser non consente di collegare un file (serve Chrome o Edge su http://localhost o https).\n\n' +
-          'Usa "Carica inps-quiz-questions.json": la banca dati resta in memoria per le prossime aperture.');
-    return;
-  }
-  try{
-    const [h] = await showOpenFilePicker({ types:[{description:'Banca dati quiz', accept:{'application/json':['.json']}}] });
-    qHandle = h; await idbSet('qhandle', h);
-    const d = JSON.parse(await (await h.getFile()).text());
-    if(!(await useData(d, 'collegata'))) { qHandle = null; show('loader'); }
-  }catch(e){}
-}
-
-/* ---------- avvio ---------- */
+/* all'avvio: file accanto alla pagina -> copia in memoria -> schermata di errore */
 (async function(){
-  // 1. file collegato
-  if(window.showOpenFilePicker && window.indexedDB){
-    const h = await idbGet('qhandle');
-    if(h){
-      let p = 'prompt';
-      try{ p = await h.queryPermission({mode:'read'}); }catch(e){}
-      if(p === 'granted'){
-        try{ qHandle = h;
-             if(await useData(JSON.parse(await (await h.getFile()).text()), 'collegata')) return;
-        }catch(e){ qHandle = null; }
-      }
-    }
-  }
-  // 2. file affiancato, via HTTP
   try{
     const r = await fetch(QFILE, {cache:'no-store'});
-    if(r.ok && await useData(await r.json(), 'affiancata')) return;
+    if(r.ok && await useData(await r.json())) return;
   }catch(e){}
-  // 3. copia in memoria dall'ultimo caricamento
   try{
     const c = JSON.parse(localStorage.getItem(QKEY));
-    if(c && await useData(c, 'memoria')) return;
+    if(c && await useData(c)) return;
   }catch(e){}
-  // 4. nessuna banca dati
   show('loader');
 })();
 
@@ -660,7 +615,9 @@ async function readFromHandle(h){
        const a = loadArch(); mergeArch(a, inc); stashArch(a); }catch(e){}
 }
 
-/* all'avvio: file collegato -> file affiancato -> sola memoria */
+/* all'avvio: file collegato -> sola memoria.
+   Nessun archivio viene letto da accanto alla pagina: su un sito condiviso
+   finirebbe nello storico di chiunque apra la pagina. */
 async function initArch(){
   migrateOld();
   if(window.showSaveFilePicker && window.indexedDB){
@@ -671,13 +628,6 @@ async function initArch(){
       if(p === 'granted'){ fileHandle = h; await readFromHandle(h); archSrc = 'file'; }
       else { pendingHandle = h; archSrc = 'sospeso'; }
     }
-  }
-  if(!fileHandle && archSrc !== 'sospeso'){
-    try{
-      const r = await fetch(FILENAME, {cache:'no-store'});
-      if(r.ok){ const a = loadArch();
-        if(mergeArch(a, await r.json()) >= 0){ stashArch(a); archSrc = 'affiancato'; } }
-    }catch(e){}
   }
   renderArch(); renderHist();
 }
@@ -692,8 +642,6 @@ function renderArch(){
   } else if(archSrc === 'sospeso'){
     lab.textContent = 'File archivio da riautorizzare';
     btn.textContent = 'Riconnetti file';
-  } else if(archSrc === 'affiancato'){
-    lab.textContent = `Caricato da ${FILENAME} · esporta per salvare le novità`;
   } else {
     lab.textContent = 'Solo memoria del browser · esporta per creare il file';
   }
@@ -705,7 +653,10 @@ function exportArch(){
   a.aggiornato = new Date().toISOString();
   const url = URL.createObjectURL(new Blob([JSON.stringify(a, null, 1)], {type:'application/json'}));
   const el = document.createElement('a');
-  el.href = url; el.download = FILENAME; el.click();
+  /* con la data nel nome gli export successivi non si sovrascrivono a vicenda */
+  el.href = url;
+  el.download = FILENAME.replace(/\.json$/, '-' + a.aggiornato.slice(0,10) + '.json');
+  el.click();
   setTimeout(() => URL.revokeObjectURL(url), 2000);
 }
 function importArch(input){
