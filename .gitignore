@@ -1,3 +1,6 @@
 CLAUDE.md
 .claude/
-inps-quiz-log.json
+
+# personal test archives: the app writes and exports these names, and they
+# must never be published with the site
+inps-quiz-log*.json
