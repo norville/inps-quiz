@@ -39,8 +39,8 @@ most often to the one you know best, so you can see what to go back to.
 
 **Simulazione esame** (exam simulation) — 60 questions drawn from all parts, with at
 least one question per part, and a 120-minute countdown that hands the test in by
-itself when it runs out. The result is also given out of 30, with the 21/30 pass mark
-highlighted.
+itself when it runs out. It is scored out of 30 — half a point per correct answer — with
+the 21/30 pass mark highlighted.
 
 **Ripasso degli errori** (review mistakes) — replays only the questions you just got
 wrong.
@@ -62,19 +62,15 @@ in your browser and, if you want, in a file on your own disk.
 
 ### Saving your results
 
-Results live in your browser by default. To keep them beyond that, you have two options:
+Results live in your browser by default, and that is the only copy. To keep them beyond
+it, use the buttons under the archive: «Esporta archivio» downloads a dated JSON file,
+and «Importa archivio» loads one back — on any browser and any machine. Importing merges
+rather than replaces, and importing the same file twice adds nothing, so re-importing is
+always safe.
 
-1. **Linked file** — with «Collega file» you choose once where the archive should live,
-   and from then on every test you hand in is written to that file automatically. This is
-   the closest thing to real saving, and needs no thought afterwards. Chrome and Edge
-   only, and only over HTTPS or localhost.
-2. **Export and import** — «Esporta archivio» downloads a dated JSON file; «Importa
-   archivio» loads one back, on any browser and any machine. Importing merges rather than
-   replaces, and importing the same file twice adds nothing, so it is always safe to
-   re-import.
-
-The indicator light next to the buttons tells you which mode you're in. Firefox and
-Safari don't support linked files, so on those browsers use export/import.
+If you want this to be automatic, export into a folder your Dropbox, Drive or Syncthing
+client already syncs: because merging is idempotent, the same archive can be imported on
+every device you study from.
 
 ## The question bank (for developers)
 
@@ -135,6 +131,5 @@ publishes.
 | --- | --- |
 | `index.html` | the whole application: markup, styles and logic |
 | `inps-quiz-questions.json` | the question bank |
-| `inps-quiz-log.json` | the archive of tests taken, written by the app (not versioned) |
 
 ---

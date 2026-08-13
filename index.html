@@ -65,8 +65,16 @@ select{font:inherit;background:var(--surface2);color:var(--text);border:1px soli
 label.chk{display:flex;gap:10px;align-items:flex-start;color:var(--muted);font-size:.88rem;cursor:pointer;margin-top:14px}
 label.chk input{margin-top:3px;accent-color:var(--accent);flex:none}
 .hide{display:none!important}
-.topbar{display:flex;justify-content:flex-end;margin-bottom:10px}
-.topbar button{padding:6px 12px;font-size:.82rem;color:var(--muted)}
+.apphead{display:flex;justify-content:space-between;align-items:center;gap:12px;
+  padding-bottom:10px;margin-bottom:24px;border-bottom:1px solid var(--line)}
+.apphead .brand{font-weight:700;font-size:.95rem}
+.apphead .side{display:flex;align-items:center;gap:14px;color:var(--muted);font-size:.85rem}
+.apphead button{padding:6px 12px;font-size:.82rem;color:var(--muted)}
+.eyebrow{color:var(--accent);font-size:.72rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.09em;margin:0 0 8px}
+/* le due schede dei quiz restano alte uguali, coi pulsanti allineati in fondo */
+.grid2 .card{display:flex;flex-direction:column}
+.grid2 .card .primary{width:100%;margin-top:auto}
 
 /* quiz */
 .bar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
@@ -117,12 +125,9 @@ td.num{text-align:right;font-variant-numeric:tabular-nums}
 .qs .att{color:var(--muted);font-size:.78rem;white-space:nowrap}
 .archbar{display:flex;justify-content:space-between;align-items:center;gap:12px;
   flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.archlab{font-weight:600;font-size:.9rem}
 .archbtns{display:flex;gap:8px;flex-wrap:wrap}
 .archbtns button{padding:7px 12px;font-size:.84rem}
-#archStatus{display:flex;align-items:center;gap:7px}
-#archStatus .led{width:8px;height:8px;border-radius:50%;background:var(--muted);flex:none}
-#archStatus.on .led{background:var(--ok)}
-#archStatus.warn .led{background:var(--warn)}
 code{background:var(--surface2);padding:1px 6px;border-radius:5px;font-size:.88em}
 details.card summary{cursor:pointer;font-weight:600;list-style:none}
 details.card summary::-webkit-details-marker{display:none}
@@ -139,11 +144,17 @@ pre{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:
 <body>
 <div class="wrap">
 
-<div class="topbar"><button id="btnTema" onclick="cycleTema()" title="Cambia tema"></button></div>
+<header class="apphead">
+  <span class="brand">Quiz INPS 499</span>
+  <span class="side">
+    <span>Assistenti informatici</span>
+    <button id="btnTema" onclick="cycleTema()" title="Cambia tema"></button>
+  </span>
+</header>
 
 <!-- ===== LOADER ===== -->
 <section id="loader" class="hide">
-  <h1>Quiz INPS 499 — Assistenti informatici</h1>
+  <h1>Quiz INPS 499</h1>
   <p class="sub">Banca dati delle domande non disponibile.</p>
   <div class="card">
     <div class="note" style="margin-top:0">
@@ -190,47 +201,43 @@ pre{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:
 
 <!-- ===== HOME ===== -->
 <section id="home">
-  <h1>Quiz INPS 499 — Assistenti informatici</h1>
+  <h1>Quiz INPS 499</h1>
   <p class="sub" id="homeSub"></p>
 
   <div class="grid2">
     <div class="card">
-      <h2>Per argomento</h2>
-      <p class="sub" style="margin-bottom:16px">Tutte le domande di una parte del manuale, in ordine casuale. Nessun limite di tempo.</p>
+      <p class="eyebrow">Studio</p>
+      <h2>Quiz per argomento</h2>
+      <p class="sub" style="margin-bottom:16px">Tutte le domande in ordine casuale sull'argomento selezionato.<br>
+        Nessun limite di tempo.</p>
       <select id="selParte"></select>
       <button class="primary" onclick="startTopic()">Avvia quiz</button>
     </div>
 
     <div class="card">
+      <p class="eyebrow">Verifica</p>
       <h2>Simulazione esame</h2>
-      <p class="sub" style="margin-bottom:16px">60 domande estratte da tutte le parti, con almeno una domanda per parte. Cronometro di 120 minuti.</p>
+      <p class="sub" style="margin-bottom:16px">60 domande su tutti gli argomenti.<br>
+        Tempo massimo di 120 minuti, punteggio minimo 21/30.</p>
       <button class="primary" onclick="startExam()">Avvia simulazione</button>
     </div>
   </div>
 
   <div class="card">
-    <div class="note" style="margin-top:0">
-      <b>Le alternative sono sempre mescolate.</b> Nel manuale il 54% delle risposte corrette è la lettera B
-      (A 14%, C 27%, D 5%): conservare l'ordine originale porterebbe a memorizzare la posizione invece del
-      contenuto, con punteggi gonfiati.
-    </div>
-  </div>
-
-  <h3>Storico dei test</h3>
-  <div class="card">
+    <h2>Archivio dei test completati</h2>
+    <p class="sub" style="margin-bottom:16px">Rivedi i risultati dei test completati, individua le domande più difficili.</p>
     <div id="histTable"></div>
-    <div class="note">
+    <div class="note hide" id="notaArch">
       <b>I risultati restano in questo browser.</b> Non vengono inviati da nessuna parte. Se cancelli i dati
       del sito, o passi a un altro browser o a un altro dispositivo, spariscono: usa «Esporta archivio» per
-      tenerne una copia, oppure «Collega file» per salvarli in automatico in un file sul tuo computer.
+      tenerne una copia.
     </div>
     <div class="archbar">
-      <span class="empty" id="archStatus"><span class="led"></span><span id="archLabel"></span></span>
+      <span class="archlab">Importa o esporta l'archivio dei test completati</span>
       <span class="archbtns">
-        <button id="btnLink" onclick="linkFile()">Collega file</button>
         <button onclick="document.getElementById('impFile').click()">Importa archivio</button>
         <button onclick="exportArch()">Esporta archivio</button>
-        <button class="ghost" onclick="clearHist()">Cancella</button>
+        <button class="ghost" onclick="clearHist()">Cancella archivio</button>
       </span>
     </div>
     <input type="file" id="impFile" accept=".json,application/json" class="hide" onchange="importArch(this)">
@@ -283,9 +290,9 @@ pre{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:
 let PARTI = [], DOMANDE = [];
 const AKEY = 'inps499-archivio';
 const QKEY = 'inps499-banca-domande';
+const EKEY = 'inps499-esportato';
 const FILENAME = 'inps-quiz-log.json';
 const QFILE = 'inps-quiz-questions.json';
-let fileHandle = null, pendingHandle = null, archSrc = 'memoria';
 
 let S = null, tick = null;
 
@@ -352,7 +359,7 @@ function setData(d){
 function renderHome(){
   const counts = {};
   DOMANDE.forEach(q => counts[q.parte] = (counts[q.parte]||0)+1);
-  $('homeSub').textContent = `${DOMANDE.length} domande da ${PARTI.length} parti del manuale.`;
+  $('homeSub').textContent = `${DOMANDE.length} Domande - ${PARTI.length} Argomenti`;
   $('selParte').innerHTML = PARTI.map(p =>
     `<option value="${esc(p.id)}">${esc(p.id)} — ${esc(p.titolo)} (${counts[p.id]})</option>`).join('');
 }
@@ -369,7 +376,7 @@ async function useData(d){
   const errs = validate(d);
   if(errs.length){ showLoadError(errs); return false; }
   setData(d); $('loadErr').classList.add('hide');
-  await initArch(); show('home'); return true;
+  initArch(); show('home'); return true;
 }
 
 /* ripiego per la pagina aperta da disco: la banca dati non è raggiungibile via fetch */
@@ -486,7 +493,7 @@ function submit(auto){
     perPart[p].tot++; if(good) perPart[p].ok++;
   });
   const tot = S.items.length, pct = Math.round(ok/tot*1000)/10;
-  const t30 = Math.round(ok/tot*30*100)/100;
+  const t30 = ok * 0.5;   /* simulazione: mezzo punto per risposta esatta, su 30 */
 
   $('rTitle').textContent = S.title + (auto ? ' — tempo scaduto' : '');
   $('rScore').innerHTML = `${ok} <small>/ ${tot} corrette</small>`;
@@ -542,7 +549,7 @@ function loadArch(){
 function stashArch(a){ localStorage.setItem(AKEY, JSON.stringify(a)); }
 function saveArch(a){
   a.aggiornato = new Date().toISOString();
-  stashArch(a); writeFile(a); renderHist();
+  stashArch(a); renderHist();
 }
 /* unione idempotente: i test sono identificati dall'istante di consegna */
 function mergeArch(base, inc){
@@ -570,81 +577,21 @@ function migrateOld(){
   localStorage.removeItem('inps499-quiz-statistiche');
 }
 
-/* ---------- file su disco ---------- */
-function idb(){ return new Promise((res,rej)=>{
-  const r = indexedDB.open('inps499', 1);
-  r.onupgradeneeded = () => r.result.createObjectStore('kv');
-  r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
-}); }
-async function idbGet(k){ try{ const d = await idb();
-  return await new Promise(res => { const q = d.transaction('kv').objectStore('kv').get(k);
-    q.onsuccess = () => res(q.result); q.onerror = () => res(null); }); }catch(e){ return null; } }
-async function idbSet(k,v){ try{ const d = await idb();
-  d.transaction('kv','readwrite').objectStore('kv').put(v,k); }catch(e){} }
-
-async function writeFile(a){
-  if(!fileHandle) return;
-  try{ const w = await fileHandle.createWritable();
-       await w.write(JSON.stringify(a, null, 1)); await w.close(); }
-  catch(e){ fileHandle = null; archSrc = 'memoria'; renderArch(); }
-}
-
-async function linkFile(){
-  try{
-    if(pendingHandle){
-      const p = await pendingHandle.requestPermission({mode:'readwrite'});
-      if(p === 'granted'){ fileHandle = pendingHandle; pendingHandle = null;
-        await readFromHandle(fileHandle); archSrc = 'file'; renderArch(); renderHist(); return; }
-      return;
-    }
-    if(!window.showSaveFilePicker){
-      alert('Il browser non consente di collegare un file (serve Chrome o Edge su http://localhost o https).\n\n' +
-            'Usa "Esporta archivio" per salvare il file e "Importa archivio" per ricaricarlo.');
-      return;
-    }
-    fileHandle = await showSaveFilePicker({ suggestedName: FILENAME,
-      types:[{description:'Archivio quiz', accept:{'application/json':['.json']}}] });
-    await idbSet('handle', fileHandle);
-    await writeFile(loadArch());
-    archSrc = 'file'; renderArch();
-  }catch(e){}
-}
-
-async function readFromHandle(h){
-  try{ const inc = JSON.parse(await (await h.getFile()).text());
-       const a = loadArch(); mergeArch(a, inc); stashArch(a); }catch(e){}
-}
-
-/* all'avvio: file collegato -> sola memoria.
+/* all'avvio l'archivio sta solo nella memoria del browser.
    Nessun archivio viene letto da accanto alla pagina: su un sito condiviso
    finirebbe nello storico di chiunque apra la pagina. */
-async function initArch(){
+function initArch(){
   migrateOld();
-  if(window.showSaveFilePicker && window.indexedDB){
-    const h = await idbGet('handle');
-    if(h){
-      let p = 'prompt';
-      try{ p = await h.queryPermission({mode:'readwrite'}); }catch(e){}
-      if(p === 'granted'){ fileHandle = h; await readFromHandle(h); archSrc = 'file'; }
-      else { pendingHandle = h; archSrc = 'sospeso'; }
-    }
-  }
-  renderArch(); renderHist();
+  /* residuo delle versioni con «Collega file»: il riferimento al file non serve più */
+  try{ indexedDB.deleteDatabase('inps499'); }catch(e){}
+  renderNota(); renderHist();
 }
 
-function renderArch(){
-  const el = $('archStatus'), lab = $('archLabel'), btn = $('btnLink');
-  el.className = 'empty' + (archSrc === 'file' ? ' on' : (archSrc === 'sospeso' ? ' warn' : ''));
-  btn.textContent = 'Collega file';
-  if(archSrc === 'file'){
-    lab.textContent = `Archivio su ${fileHandle.name} · salvataggio automatico`;
-    btn.textContent = 'Cambia file';
-  } else if(archSrc === 'sospeso'){
-    lab.textContent = 'File archivio da riautorizzare';
-    btn.textContent = 'Riconnetti file';
-  } else {
-    lab.textContent = 'Solo memoria del browser · esporta per creare il file';
-  }
+/* l'avviso serve a spingere verso l'esportazione: una volta esportato ha fatto il suo lavoro */
+function renderNota(){
+  let fatto = false;
+  try{ fatto = !!localStorage.getItem(EKEY); }catch(e){}
+  $('notaArch').classList.toggle('hide', fatto);
 }
 
 /* ---------- import / export ---------- */
@@ -658,6 +605,8 @@ function exportArch(){
   el.download = FILENAME.replace(/\.json$/, '-' + a.aggiornato.slice(0,10) + '.json');
   el.click();
   setTimeout(() => URL.revokeObjectURL(url), 2000);
+  try{ localStorage.setItem(EKEY, a.aggiornato); }catch(e){}
+  renderNota();
 }
 function importArch(input){
   const f = input.files && input.files[0];
@@ -713,6 +662,13 @@ function clearHist(){
   if(!confirm('Cancellare lo storico dei test e le statistiche per domanda?')) return;
   const a = emptyArch(); saveArch(a);
 }
+/* punteggio del test: 1 punto per risposta esatta nei quiz, mezzo punto su 30
+   nelle simulazioni. La percentuale è sempre il rapporto fra i due. */
+function punti(r){
+  const p = r.mode === 'exam' ? {ott: r.ok * 0.5, max: 30} : {ott: r.ok, max: r.tot};
+  p.pct = p.max ? Math.round(p.ott / p.max * 1000) / 10 : 0;
+  return p;
+}
 function renderHist(){
   const h = loadArch().test;
   if(!h.length){ $('histTable').innerHTML = '<p class="empty">Nessun test svolto finora.</p>'; return; }
@@ -720,16 +676,15 @@ function renderHist(){
     const d = new Date(r.id);
     const dd = d.toLocaleDateString('it-IT',{day:'2-digit',month:'2-digit',year:'2-digit'}) + ' ' +
                d.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
-    const c30 = (r.t30 != null)
-      ? `<span style="color:${r.t30>=21?'var(--ok)':'var(--ko)'}">${fmt30(r.t30)}</span>` : '—';
+    const p = punti(r);
     return `<tr><td>${dd}</td><td>${esc(r.title)}</td>
-      <td style="width:24%"><div class="barrow"><i style="width:${r.pct}%"></i></div></td>
-      <td class="num">${r.ok}/${r.tot}</td><td class="num">${r.pct}%</td><td class="num">${c30}</td></tr>`;
+      <td style="width:24%"><div class="barrow"><i style="width:${p.pct}%"></i></div></td>
+      <td class="num">${fmt30(p.ott)}/${fmt30(p.max)}</td><td class="num">${p.pct}%</td></tr>`;
   }).join('');
-  const exams = h.filter(r => r.mode === 'exam' && r.t30 != null);
-  const avg = exams.length ? exams.reduce((s,r) => s + r.t30, 0) / exams.length : null;
+  const exams = h.filter(r => r.mode === 'exam');
+  const avg = exams.length ? exams.reduce((s,r) => s + punti(r).ott, 0) / exams.length : null;
   $('histTable').innerHTML =
-    `<table><thead><tr><th>Data</th><th>Test</th><th></th><th class="num">Punti</th><th class="num">%</th><th class="num">/30</th></tr></thead>
+    `<table><thead><tr><th>Data</th><th>Test</th><th></th><th class="num">Punti</th><th class="num">%</th></tr></thead>
      <tbody>${rows}</tbody></table>
      <p class="empty" style="margin:12px 0 0">${h.length} test svolti${avg!==null?` · media simulazioni ${fmt30(avg)}/30`:''}</p>`;
 }
