@@ -3,40 +3,40 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Quiz INPS 499 — Assistenti informatici</title>
-<script>try{var _t=localStorage.getItem('inps499-tema');if(_t&&_t!=='auto')document.documentElement.dataset.tema=_t;}catch(e){}</script>
+<title>Quiz INPS 499</title>
+<script>try{var _t=localStorage.getItem('quiz-theme');if(_t&&_t!=='auto')document.documentElement.dataset.theme=_t;}catch(e){}</script>
 <style>
 :root{
   color-scheme:dark;
   --bg:#1c1b19; --surface:#262521; --surface2:#2f2e29; --line:#3a3833;
   --text:#e8e6e1; --muted:#a09c94; --accent:#5fd3a8; --accent-dim:#2f6b57;
   --accent-hi:#7ce0bb; --on-accent:#12211c;
-  --ok:#5fd3a8; --ko:#e8785f; --warn:#e8c25f;
+  --ok:#5fd3a8; --ko:#e8785f; --warn:#e8c25f; --on-ko:#2b1109;
 }
-/* tema del sistema operativo, quando non c'è una scelta manuale */
+/* operating-system theme, when no manual choice was made */
 @media (prefers-color-scheme: light){
-  :root:not([data-tema="scuro"]){
+  :root:not([data-theme="dark"]){
   color-scheme:light;
   --bg:#faf8f4; --surface:#ffffff; --surface2:#f2efe8; --line:#ddd8cd;
   --text:#26241f; --muted:#6b665c; --accent:#1a7f5f; --accent-dim:#d3efe3;
   --accent-hi:#146a4f; --on-accent:#ffffff;
-  --ok:#1a7f5f; --ko:#bf3f26; --warn:#996d0d;
+  --ok:#1a7f5f; --ko:#bf3f26; --warn:#996d0d; --on-ko:#ffffff;
   }
 }
-/* scelta manuale */
-:root[data-tema="chiaro"]{
+/* manual choice */
+:root[data-theme="light"]{
   color-scheme:light;
   --bg:#faf8f4; --surface:#ffffff; --surface2:#f2efe8; --line:#ddd8cd;
   --text:#26241f; --muted:#6b665c; --accent:#1a7f5f; --accent-dim:#d3efe3;
   --accent-hi:#146a4f; --on-accent:#ffffff;
-  --ok:#1a7f5f; --ko:#bf3f26; --warn:#996d0d;
+  --ok:#1a7f5f; --ko:#bf3f26; --warn:#996d0d; --on-ko:#ffffff;
 }
-:root[data-tema="scuro"]{
+:root[data-theme="dark"]{
   color-scheme:dark;
   --bg:#1c1b19; --surface:#262521; --surface2:#2f2e29; --line:#3a3833;
   --text:#e8e6e1; --muted:#a09c94; --accent:#5fd3a8; --accent-dim:#2f6b57;
   --accent-hi:#7ce0bb; --on-accent:#12211c;
-  --ok:#5fd3a8; --ko:#e8785f; --warn:#e8c25f;
+  --ok:#5fd3a8; --ko:#e8785f; --warn:#e8c25f; --on-ko:#2b1109;
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
@@ -60,6 +60,8 @@ button:disabled{opacity:.4;cursor:default}
 .primary{background:var(--accent);color:var(--on-accent);border-color:var(--accent);font-weight:600}
 .primary:hover:not(:disabled){background:var(--accent-hi);color:var(--on-accent);border-color:var(--accent-hi)}
 .ghost{background:transparent}
+.danger{background:var(--ko);color:var(--on-ko);border-color:var(--ko);font-weight:600}
+.danger:hover:not(:disabled){filter:brightness(1.1);color:var(--on-ko);border-color:var(--ko)}
 select{font:inherit;background:var(--surface2);color:var(--text);border:1px solid var(--line);
   border-radius:9px;padding:10px 12px;width:100%;margin-bottom:14px}
 label.chk{display:flex;gap:10px;align-items:flex-start;color:var(--muted);font-size:.88rem;cursor:pointer;margin-top:14px}
@@ -72,7 +74,7 @@ label.chk input{margin-top:3px;accent-color:var(--accent);flex:none}
 .apphead button{padding:6px 12px;font-size:.82rem;color:var(--muted)}
 .eyebrow{color:var(--accent);font-size:.72rem;font-weight:700;text-transform:uppercase;
   letter-spacing:.09em;margin:0 0 8px}
-/* le due schede dei quiz restano alte uguali, coi pulsanti allineati in fondo */
+/* the two quiz cards stay the same height, with their buttons aligned at the bottom */
 .grid2 .card{display:flex;flex-direction:column}
 .grid2 .card .primary{width:100%;margin-top:auto}
 
@@ -100,7 +102,8 @@ label.chk input{margin-top:3px;accent-color:var(--accent);flex:none}
 table{width:100%;border-collapse:collapse;font-size:.9rem}
 th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line)}
 th{color:var(--muted);font-weight:600;font-size:.78rem;text-transform:uppercase;letter-spacing:.05em}
-td.num{text-align:right;font-variant-numeric:tabular-nums}
+td.num,th.num{text-align:right}
+td.num{font-variant-numeric:tabular-nums}
 .barrow{height:6px;background:var(--surface2);border-radius:3px;overflow:hidden;min-width:70px}
 .barrow i{display:block;height:100%;background:var(--accent)}
 .rev{border-left:3px solid var(--ko);padding:12px 0 12px 14px;margin-bottom:18px}
@@ -116,18 +119,21 @@ td.num{text-align:right;font-variant-numeric:tabular-nums}
 .t30.ok{color:var(--ok)} .t30.ko{color:var(--ko)}
 .t30lab{color:var(--muted);font-size:.88rem}
 .qs td{vertical-align:top}
-.qs .esito{width:1.4em;font-weight:700}
-.qs .esito.ok{color:var(--ok)} .qs .esito.ko{color:var(--ko)}
+.qs .mark{width:1.4em;font-weight:700}
+.qs .mark.ok{color:var(--ok)} .qs .mark.ko{color:var(--ko)}
 .qs .qt{font-size:.88rem;line-height:1.4}
 .qs .ref{color:var(--muted);font-size:.75rem;display:block;margin-top:2px}
 .qs .rate{font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}
 .rate.r-lo{color:var(--ko)} .rate.r-mid{color:var(--warn)} .rate.r-hi{color:var(--ok)}
 .qs .att{color:var(--muted);font-size:.78rem;white-space:nowrap}
-.archbar{display:flex;justify-content:space-between;align-items:center;gap:12px;
+.histbar{display:flex;justify-content:space-between;align-items:center;gap:12px;
   flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
-.archlab{font-weight:600;font-size:.9rem}
-.archbtns{display:flex;gap:8px;flex-wrap:wrap}
-.archbtns button{padding:7px 12px;font-size:.84rem}
+.histstatus{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:.85rem}
+.histstatus .led{width:9px;height:9px;border-radius:50%;background:var(--muted);flex:none}
+.histstatus.saved .led{background:var(--ok)}
+.histstatus.unsaved .led{background:var(--warn)}
+.histbtns{display:flex;gap:8px;flex-wrap:wrap}
+.histbtns button{padding:7px 12px;font-size:.84rem}
 code{background:var(--surface2);padding:1px 6px;border-radius:5px;font-size:.88em}
 details.card summary{cursor:pointer;font-weight:600;list-style:none}
 details.card summary::-webkit-details-marker{display:none}
@@ -148,7 +154,7 @@ pre{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:
   <span class="brand">Quiz INPS 499</span>
   <span class="side">
     <span>Assistenti informatici</span>
-    <button id="btnTema" onclick="cycleTema()" title="Cambia tema"></button>
+    <button id="btnTheme" onclick="cycleTheme()" title="Cambia tema"></button>
   </span>
 </header>
 
@@ -164,35 +170,35 @@ pre{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:
       file da sola: servila via HTTP (<code>python3 -m http.server</code> nella cartella) oppure
       caricala a mano col pulsante qui sotto.
     </div>
-    <div class="archbtns" style="margin-top:16px">
+    <div class="histbtns" style="margin-top:16px">
       <button class="primary" onclick="document.getElementById('qFile').click()">Carica il file delle domande</button>
     </div>
     <div class="note err hide" id="loadErr"></div>
   </div>
   <details class="card">
     <summary>Formato del file</summary>
-    <p class="empty" style="margin-bottom:0">Ogni domanda richiede <code>parte</code>, <code>sezione</code>,
-    <code>n</code>, <code>testo</code>, da 2 a 6 <code>options</code> e <code>risposta</code> con la lettera
-    corretta. Il campo <code>id</code> è facoltativo: se lo ometti viene ricavato da parte, sezione e numero,
-    ed è la chiave con cui vengono associate le statistiche storiche. L'elenco <code>parti</code> serve solo
-    a dare un titolo e un ordine: le parti non elencate vengono aggiunte in coda automaticamente.</p>
+    <p class="empty" style="margin-bottom:0">Ogni domanda richiede <code>part</code>, <code>section</code>,
+    <code>n</code>, <code>text</code>, da 2 a 6 <code>options</code> e <code>answer</code> con la lettera
+    corretta. Il campo <code>id</code> è facoltativo: se lo ometti viene ricavato da materia, sezione e numero,
+    ed è la chiave con cui vengono associate le statistiche storiche. L'elenco <code>parts</code> serve solo
+    a dare un titolo e un ordine: le materie non elencate vengono aggiunte in coda automaticamente.</p>
 <pre>{
-  "parti": [
-    { "id": "Parte I", "titolo": "Informatica di base e gestione di sistemi di backup e recovery" }
+  "parts": [
+    { "id": "Parte I", "title": "Informatica di base e gestione di sistemi di backup e recovery" }
   ],
-  "domande": [
+  "questions": [
     {
-      "parte": "Parte I",
-      "sezione": "Capitolo 1 — Dai segnali elettrici agli algoritmi",
+      "part": "Parte I",
+      "section": "Capitolo 1 — Dai segnali elettrici agli algoritmi",
       "n": 1,
-      "testo": "Un byte è composto da:",
+      "text": "Un byte è composto da:",
       "options": [
         { "l": "A", "t": "2 bit" },
         { "l": "B", "t": "4 bit" },
         { "l": "C", "t": "8 bit" },
         { "l": "D", "t": "16 bit" }
       ],
-      "risposta": "C"
+      "answer": "C"
     }
   ]
 }</pre>
@@ -207,40 +213,41 @@ pre{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:
   <div class="grid2">
     <div class="card">
       <p class="eyebrow">Studio</p>
-      <h2>Quiz per argomento</h2>
-      <p class="sub" style="margin-bottom:16px">Tutte le domande in ordine casuale sull'argomento selezionato.<br>
+      <h2>Quiz per materia</h2>
+      <p class="sub" style="margin-bottom:16px">Tutte le domande su una materia, in ordine casuale.<br>
         Nessun limite di tempo.</p>
-      <select id="selParte"></select>
+      <select id="selPart"></select>
       <button class="primary" onclick="startTopic()">Avvia quiz</button>
     </div>
 
     <div class="card">
       <p class="eyebrow">Verifica</p>
       <h2>Simulazione esame</h2>
-      <p class="sub" style="margin-bottom:16px">60 domande su tutti gli argomenti.<br>
-        Tempo massimo di 120 minuti, punteggio minimo 21/30.</p>
+      <p class="sub" style="margin-bottom:16px">60 domande su tutte le materie.<br>
+        Tempo massimo 120 minuti, punteggio minimo 21/30.</p>
       <button class="primary" onclick="startExam()">Avvia simulazione</button>
     </div>
   </div>
 
   <div class="card">
-    <h2>Archivio dei test completati</h2>
-    <p class="sub" style="margin-bottom:16px">Rivedi i risultati dei test completati, individua le domande più difficili.</p>
+    <p class="eyebrow">Storico</p>
+    <h2>Risultati dei test</h2>
+    <p class="sub" style="margin-bottom:16px">Rivedi i risultati, individua le domande più difficili.</p>
     <div id="histTable"></div>
-    <div class="note hide" id="notaArch">
-      <b>I risultati restano in questo browser.</b> Non vengono inviati da nessuna parte. Se cancelli i dati
-      del sito, o passi a un altro browser o a un altro dispositivo, spariscono: usa «Esporta archivio» per
-      tenerne una copia.
+    <div class="note hide" id="histNote">
+      <b>I dati restano in questo browser e non vengono automaticamente salvati.</b>
+      Se passi a un altro browser, o clicchi su <b>Cancella</b>, <b>i dati vanno persi</b>.
+      Usa <b>Esporta</b> per salvarne una copia, oppure <b>Importa</b> per caricarne una.
     </div>
-    <div class="archbar">
-      <span class="archlab">Importa o esporta l'archivio dei test completati</span>
-      <span class="archbtns">
-        <button onclick="document.getElementById('impFile').click()">Importa archivio</button>
-        <button onclick="exportArch()">Esporta archivio</button>
-        <button class="ghost" onclick="clearHist()">Cancella archivio</button>
+    <div class="histbar">
+      <span class="histstatus" id="histStatus"><span class="led"></span><span id="histStatusLabel"></span></span>
+      <span class="histbtns">
+        <button class="primary" onclick="document.getElementById('impFile').click()">Importa</button>
+        <button class="primary" onclick="exportHist()">Esporta</button>
+        <button class="danger" onclick="clearHist()">Cancella</button>
       </span>
     </div>
-    <input type="file" id="impFile" accept=".json,application/json" class="hide" onchange="importArch(this)">
+    <input type="file" id="impFile" accept=".json,application/json" class="hide" onchange="importHist(this)">
   </div>
 </section>
 
@@ -287,10 +294,10 @@ pre{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:
 <input type="file" id="qFile" accept=".json,application/json" class="hide" onchange="importQuestions(this)">
 </div>
 <script>
-let PARTI = [], DOMANDE = [];
-const AKEY = 'inps499-archivio';
-const QKEY = 'inps499-banca-domande';
-const EKEY = 'inps499-esportato';
+let PARTS = [], QUESTIONS = [];
+const HKEY = 'quiz-history';
+const QKEY = 'quiz-questions';   /* cached copy of the bank */
+const EKEY = 'quiz-exported';    /* what the last export captured */
 const FILENAME = 'inps-quiz-log.json';
 const QFILE = 'inps-quiz-questions.json';
 
@@ -302,105 +309,110 @@ function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.rando
 function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
 function fmt30(v){ return (Math.round(v*100)/100).toFixed(2).replace(/\.?0+$/,'').replace('.',','); }
 function mmss(s){const m=Math.floor(s/60),x=s%60;return String(m).padStart(2,'0')+':'+String(x).padStart(2,'0');}
+function shortDate(v){ return new Date(v).toLocaleDateString('it-IT',{day:'2-digit',month:'2-digit',year:'2-digit'}); }
 function show(id){['loader','home','quiz','results'].forEach(s=>$(s).classList.toggle('hide',s!==id));window.scrollTo(0,0);}
 
-/* ---------- tema ---------- */
-const TKEY = 'inps499-tema';
-const TEMI = ['auto','chiaro','scuro'];
-const TLAB = {auto:'Tema automatico', chiaro:'Tema chiaro', scuro:'Tema scuro'};
-function getTema(){ try{ const v = localStorage.getItem(TKEY); return TEMI.includes(v) ? v : 'auto'; }
-                    catch(e){ return 'auto'; } }
-function applyTema(t){
+/* ---------- theme ---------- */
+const TKEY = 'quiz-theme';
+const THEMES = ['auto','light','dark'];
+const THEME_LABEL = {auto:'Tema automatico', light:'Tema chiaro', dark:'Tema scuro'};
+function getTheme(){
+  try{ const v = localStorage.getItem(TKEY); return THEMES.includes(v) ? v : 'auto'; }
+  catch(e){ return 'auto'; }
+}
+function applyTheme(t){
   const r = document.documentElement;
-  if(t === 'auto') delete r.dataset.tema; else r.dataset.tema = t;
-  $('btnTema').textContent = TLAB[t];
+  if(t === 'auto') delete r.dataset.theme; else r.dataset.theme = t;
+  $('btnTheme').textContent = THEME_LABEL[t];
 }
-function cycleTema(){
-  const t = TEMI[(TEMI.indexOf(getTema()) + 1) % TEMI.length];
+function cycleTheme(){
+  const t = THEMES[(THEMES.indexOf(getTheme()) + 1) % THEMES.length];
   try{ localStorage.setItem(TKEY, t); }catch(e){}
-  applyTema(t);
+  applyTheme(t);
 }
-applyTema(getTema());
+applyTheme(getTheme());
 
-/* ---------- banca dati ---------- */
+/* ---------- question bank ---------- */
 function validate(d){
   const e = [];
   if(!d || typeof d !== 'object') return ['Il file non contiene un oggetto JSON.'];
-  if(!Array.isArray(d.domande) || !d.domande.length) return ["Manca l'elenco \"domande\" oppure è vuoto."];
-  d.domande.forEach((q,i) => {
-    const at = `domanda #${i+1}` + (q && q.n ? ` (${q.parte||'?'}, n. ${q.n})` : '');
+  if(!Array.isArray(d.questions) || !d.questions.length) return ["Manca l'elenco \"questions\" oppure è vuoto."];
+  d.questions.forEach((q,i) => {
+    const at = `domanda #${i+1}` + (q && q.n ? ` (${q.part||'?'}, n. ${q.n})` : '');
     if(!q || typeof q !== 'object'){ e.push(`${at}: non è un oggetto`); return; }
-    if(!q.parte)  e.push(`${at}: manca "parte"`);
-    if(!q.sezione) e.push(`${at}: manca "sezione"`);
+    if(!q.part)  e.push(`${at}: manca "part"`);
+    if(!q.section) e.push(`${at}: manca "section"`);
     if(typeof q.n !== 'number') e.push(`${at}: "n" deve essere un numero`);
-    if(!q.testo || !String(q.testo).trim()) e.push(`${at}: "testo" vuoto`);
+    if(!q.text || !String(q.text).trim()) e.push(`${at}: "text" vuoto`);
     if(!Array.isArray(q.options) || q.options.length < 2 || q.options.length > 6){
       e.push(`${at}: servono da 2 a 6 alternative`); return;
     }
-    const L = q.options.map(o => o && o.l);
-    if(new Set(L).size !== L.length) e.push(`${at}: lettere delle alternative duplicate`);
+    const letters = q.options.map(o => o && o.l);
+    if(new Set(letters).size !== letters.length) e.push(`${at}: lettere delle alternative duplicate`);
     if(q.options.some(o => !o || !o.t || !String(o.t).trim())) e.push(`${at}: alternativa senza testo`);
-    if(!L.includes(q.risposta)) e.push(`${at}: "risposta" (${q.risposta}) non corrisponde a nessuna alternativa`);
+    if(!letters.includes(q.answer)) e.push(`${at}: "answer" (${q.answer}) non corrisponde a nessuna alternativa`);
   });
   return e;
 }
 
 function setData(d){
-  DOMANDE = d.domande;
-  const noti = new Set();
-  PARTI = (Array.isArray(d.parti) ? d.parti : []).filter(p => p && p.id && !noti.has(p.id) && noti.add(p.id));
-  DOMANDE.forEach(q => { if(!noti.has(q.parte)){ noti.add(q.parte);
-    PARTI.push({id:q.parte, titolo:q.titoloParte || q.parte}); } });
-  PARTI = PARTI.filter(p => DOMANDE.some(q => q.parte === p.id));
-  try{ localStorage.setItem(QKEY, JSON.stringify({parti:PARTI, domande:DOMANDE})); }catch(e){}
+  QUESTIONS = d.questions;
+  const seen = new Set();
+  PARTS = (Array.isArray(d.parts) ? d.parts : []).filter(p => p && p.id && !seen.has(p.id) && seen.add(p.id));
+  QUESTIONS.forEach(q => { if(!seen.has(q.part)){ seen.add(q.part);
+    PARTS.push({id:q.part, title:q.partTitle || q.part}); } });
+  PARTS = PARTS.filter(p => QUESTIONS.some(q => q.part === p.id));
+  try{ localStorage.setItem(QKEY, JSON.stringify({parts:PARTS, questions:QUESTIONS})); }catch(e){}
   renderHome();
 }
 
 function renderHome(){
   const counts = {};
-  DOMANDE.forEach(q => counts[q.parte] = (counts[q.parte]||0)+1);
-  $('homeSub').textContent = `${DOMANDE.length} Domande - ${PARTI.length} Argomenti`;
-  $('selParte').innerHTML = PARTI.map(p =>
-    `<option value="${esc(p.id)}">${esc(p.id)} — ${esc(p.titolo)} (${counts[p.id]})</option>`).join('');
+  QUESTIONS.forEach(q => counts[q.part] = (counts[q.part]||0)+1);
+  $('homeSub').textContent = `${QUESTIONS.length} domande • ${PARTS.length} materie`;
+  $('selPart').innerHTML = PARTS.map(p =>
+    `<option value="${esc(p.id)}">${esc(p.id)} — ${esc(p.title)} (${counts[p.id]})</option>`).join('');
 }
 
-function showLoadError(errs){
+function showLoadError(errors){
   const box = $('loadErr');
   box.classList.remove('hide');
   box.innerHTML = `<b>Il file non è utilizzabile:</b><br>` +
-    errs.slice(0,8).map(esc).join('<br>') +
-    (errs.length > 8 ? `<br>… e altri ${errs.length-8} problemi.` : '');
+    errors.slice(0,8).map(esc).join('<br>') +
+    (errors.length > 8 ? `<br>… e altri ${errors.length-8} problemi.` : '');
 }
 
 async function useData(d){
-  const errs = validate(d);
-  if(errs.length){ showLoadError(errs); return false; }
+  const errors = validate(d);
+  if(errors.length){ showLoadError(errors); return false; }
   setData(d); $('loadErr').classList.add('hide');
-  initArch(); show('home'); return true;
+  initHist(); show('home'); return true;
 }
 
-/* ripiego per la pagina aperta da disco: la banca dati non è raggiungibile via fetch */
+/* fallback for the page opened from disk, where the bank can't be fetched */
 function importQuestions(input){
-  const f = input.files && input.files[0]; if(!f) return;
-  const rd = new FileReader();
-  rd.onload = async () => {
-    let d; try{ d = JSON.parse(rd.result); }
+  const file = input.files && input.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = async () => {
+    let d; try{ d = JSON.parse(reader.result); }
     catch(e){ showLoadError(['JSON non valido: ' + e.message]); show('loader'); input.value=''; return; }
     if(!await useData(d)) show('loader');
     input.value = '';
   };
-  rd.readAsText(f);
+  reader.readAsText(file);
 }
 
-/* all'avvio: file accanto alla pagina -> copia in memoria -> schermata di errore */
+/* on startup: file next to the page -> cached copy -> error screen */
 (async function(){
   try{
     const r = await fetch(QFILE, {cache:'no-store'});
     if(r.ok && await useData(await r.json())) return;
   }catch(e){}
   try{
-    const c = JSON.parse(localStorage.getItem(QKEY));
-    if(c && await useData(c)) return;
+    const cached = JSON.parse(localStorage.getItem(QKEY));
+    if(cached && await useData(cached)) return;
+    /* the cached copy is unusable, so don't keep retrying it */
+    localStorage.removeItem(QKEY);
   }catch(e){}
   show('loader');
 })();
@@ -409,29 +421,29 @@ function importQuestions(input){
 function prep(list){
   return list.map(q => {
     const opts = shuffle(q.options);
-    return {q, opts, correct: q.options.find(o => o.l === q.risposta)};
+    return {q, opts, correct: q.options.find(o => o.l === q.answer)};
   });
 }
 
 function startTopic(){
-  const p = $('selParte').value;
-  const pool = DOMANDE.filter(q => q.parte === p);
-  begin(prep(shuffle(pool)), p, 'topic', 0);
+  const id = $('selPart').value;
+  const pool = QUESTIONS.filter(q => q.part === id);
+  begin(prep(shuffle(pool)), id, 'topic', 0);
 }
 
 function startExam(){
   const byPart = {};
-  DOMANDE.forEach(q => (byPart[q.parte] = byPart[q.parte] || []).push(q));
+  QUESTIONS.forEach(q => (byPart[q.part] = byPart[q.part] || []).push(q));
   const picked = [], used = new Set();
-  // almeno una domanda per parte
-  PARTI.forEach(p => {
+  // at least one question per part
+  PARTS.forEach(p => {
     const pool = byPart[p.id];
     if(!pool || !pool.length) return;
     const q = pool[Math.random()*pool.length|0];
     picked.push(q); used.add(q);
   });
-  // completa fino a 60
-  const rest = shuffle(DOMANDE.filter(q => !used.has(q)));
+  // fill up to 60
+  const rest = shuffle(QUESTIONS.filter(q => !used.has(q)));
   while(picked.length < 60 && rest.length) picked.push(rest.pop());
   begin(prep(shuffle(picked)), 'Simulazione esame', 'exam', 120*60);
 }
@@ -462,8 +474,8 @@ function begin(items, title, mode, limit){
 function render(){
   const it = S.items[S.idx], q = it.q;
   $('qProgress').textContent = `${S.idx+1} di ${S.items.length}`;
-  $('qSource').textContent = q.parte + ' · ' + q.sezione.replace(/^Quiz \| /,'') + ' · n. ' + q.n;
-  $('qText').textContent = q.testo;
+  $('qSource').textContent = q.part + ' · ' + q.section.replace(/^Quiz \| /,'') + ' · n. ' + q.n;
+  $('qText').textContent = q.text;
   $('qOpts').innerHTML = it.opts.map((o,i) =>
     `<button class="opt ${S.answers[S.idx]===o.l?'sel':''}" onclick="pick('${o.l}')">
        <span class="l">${String.fromCharCode(65+i)}.</span><span>${esc(o.t)}</span></button>`).join('');
@@ -488,12 +500,12 @@ function submit(auto){
   S.items.forEach((it,i) => {
     const good = S.answers[i] === it.correct.l;
     if(good) ok++;
-    const p = it.q.parte;
-    perPart[p] = perPart[p] || {ok:0, tot:0};
-    perPart[p].tot++; if(good) perPart[p].ok++;
+    const id = it.q.part;
+    perPart[id] = perPart[id] || {ok:0, tot:0};
+    perPart[id].tot++; if(good) perPart[id].ok++;
   });
   const tot = S.items.length, pct = Math.round(ok/tot*1000)/10;
-  const t30 = ok * 0.5;   /* simulazione: mezzo punto per risposta esatta, su 30 */
+  const t30 = ok * 0.5;   /* exam simulation: half a point per correct answer, out of 30 */
 
   $('rTitle').textContent = S.title + (auto ? ' — tempo scaduto' : '');
   $('rScore').innerHTML = `${ok} <small>/ ${tot} corrette</small>`;
@@ -506,142 +518,142 @@ function submit(auto){
       <span class="t30lab">${pass?'sopra la soglia di idoneità':'sotto la soglia di idoneità'} · 21/30</span>`;
   } else box.classList.add('hide');
 
-  $('rParts').innerHTML = '<h3 style="margin-top:0">Risultato per parte</h3><table><tbody>' +
-    PARTI.filter(p => perPart[p.id]).map(p => {
-      const d = perPart[p.id], w = Math.round(d.ok/d.tot*100);
+  $('rParts').innerHTML = '<h3 style="margin-top:0">Risultato per materia</h3><table><tbody>' +
+    PARTS.filter(p => perPart[p.id]).map(p => {
+      const d = perPart[p.id], width = Math.round(d.ok/d.tot*100);
       return `<tr><td>${esc(p.id)}</td>
-        <td style="width:40%"><div class="barrow"><i style="width:${w}%"></i></div></td>
+        <td style="width:40%"><div class="barrow"><i style="width:${width}%"></i></div></td>
         <td class="num">${d.ok}/${d.tot}</td></tr>`;
     }).join('') + '</tbody></table>';
 
-  const errs = S.items.map((it,i) => ({it, given:S.answers[i]})).filter(e => e.given !== e.it.correct.l);
-  $('btnReview').classList.toggle('hide', errs.length===0);
-  $('rErrTitle').textContent = errs.length ? `Errori (${errs.length})` : 'Nessun errore';
-  $('rErrors').innerHTML = errs.length ? errs.map(e => {
-    const g = e.given ? e.it.opts.find(o => o.l===e.given) : null;
+  const wrong = S.items.map((it,i) => ({it, given:S.answers[i]})).filter(e => e.given !== e.it.correct.l);
+  $('btnReview').classList.toggle('hide', wrong.length===0);
+  $('rErrTitle').textContent = wrong.length ? `Errori (${wrong.length})` : 'Nessun errore';
+  $('rErrors').innerHTML = wrong.length ? wrong.map(e => {
+    const given = e.given ? e.it.opts.find(o => o.l===e.given) : null;
     return `<div class="rev">
-      <div class="qt">${esc(e.it.q.testo)}</div>
-      <div class="a ko">✗ ${g ? esc(g.t) : 'nessuna risposta data'}</div>
+      <div class="qt">${esc(e.it.q.text)}</div>
+      <div class="a ko">✗ ${given ? esc(given.t) : 'nessuna risposta data'}</div>
       <div class="a ok">✓ ${esc(e.it.correct.t)}</div>
-      <div class="src">${esc(e.it.q.parte)} · ${esc(e.it.q.sezione.replace(/^Quiz \| /,''))} · domanda n. ${e.it.q.n}</div>
+      <div class="src">${esc(e.it.q.part)} · ${esc(e.it.q.section.replace(/^Quiz \| /,''))} · domanda n. ${e.it.q.n}</div>
     </div>`;
   }).join('') : '<p class="empty">Tutte le risposte sono corrette.</p>';
 
-  const a = loadArch();
-  a.test.unshift({
+  const hist = loadHist();
+  hist.tests.unshift({
     id: new Date().toISOString(), mode: S.mode, title: S.title,
     ok, tot, pct, sec: S.elapsed, t30: S.mode === 'exam' ? t30 : null,
-    esiti: S.items.map((it,i) => [qkey(it.q), S.answers[i] === it.correct.l ? 1 : 0])
+    outcomes: S.items.map((it,i) => [qkey(it.q), S.answers[i] === it.correct.l ? 1 : 0])
   });
-  saveArch(a);
+  saveHist(hist);
   renderQStats();
   show('results');
 }
 
-/* ---------- archivio ---------- */
-function emptyArch(){ return {app:'quiz-inps-499', versione:1, aggiornato:null, test:[]}; }
+/* ---------- history ---------- */
+function emptyHist(){ return {app:'quiz-inps-499', version:1, updated:null, tests:[]}; }
 
-function loadArch(){
-  try{ const a = JSON.parse(localStorage.getItem(AKEY));
-       return (a && Array.isArray(a.test)) ? a : emptyArch(); }
-  catch(e){ return emptyArch(); }
+function loadHist(){
+  try{ const h = JSON.parse(localStorage.getItem(HKEY));
+       return (h && Array.isArray(h.tests)) ? h : emptyHist(); }
+  catch(e){ return emptyHist(); }
 }
-function stashArch(a){ localStorage.setItem(AKEY, JSON.stringify(a)); }
-function saveArch(a){
-  a.aggiornato = new Date().toISOString();
-  stashArch(a); renderHist();
+function stashHist(h){ localStorage.setItem(HKEY, JSON.stringify(h)); }
+function saveHist(h){
+  h.updated = new Date().toISOString();
+  stashHist(h); renderHist();
 }
-/* unione idempotente: i test sono identificati dall'istante di consegna */
-function mergeArch(base, inc){
-  const seen = new Set(base.test.map(t => t.id));
+/* idempotent union: tests are identified by the instant they were handed in */
+function mergeHist(base, incoming){
+  const seen = new Set(base.tests.map(t => t.id));
   let added = 0;
-  (inc && Array.isArray(inc.test) ? inc.test : []).forEach(r => {
-    if(r && r.id && !seen.has(r.id)){ base.test.push(r); seen.add(r.id); added++; }
+  (incoming && Array.isArray(incoming.tests) ? incoming.tests : []).forEach(r => {
+    if(r && r.id && !seen.has(r.id)){ base.tests.push(r); seen.add(r.id); added++; }
   });
-  base.test.sort((x,y) => String(y.id).localeCompare(String(x.id)));
+  base.tests.sort((x,y) => String(y.id).localeCompare(String(x.id)));
   return added;
 }
-/* recupera i dati salvati con le versioni precedenti */
-function migrateOld(){
-  const H = localStorage.getItem('inps499-quiz-storico');
-  if(!H) return;
-  try{
-    const a = loadArch(), seen = new Set(a.test.map(t => t.id));
-    JSON.parse(H).forEach(r => {
-      if(r && r.d && !seen.has(r.d)) a.test.push({...r, id:r.d, esiti:[]});
-    });
-    a.test.sort((x,y) => String(y.id).localeCompare(String(x.id)));
-    stashArch(a);
-  }catch(e){}
-  localStorage.removeItem('inps499-quiz-storico');
-  localStorage.removeItem('inps499-quiz-statistiche');
-}
+/* on startup the history lives only in the browser's memory.
+   No history is ever read from next to the page: on a shared site it would
+   end up in the history of whoever opens it. */
+function initHist(){ renderHist(); }
 
-/* all'avvio l'archivio sta solo nella memoria del browser.
-   Nessun archivio viene letto da accanto alla pagina: su un sito condiviso
-   finirebbe nello storico di chiunque apra la pagina. */
-function initArch(){
-  migrateOld();
-  /* residuo delle versioni con «Collega file»: il riferimento al file non serve più */
-  try{ indexedDB.deleteDatabase('inps499'); }catch(e){}
-  renderNota(); renderHist();
+/* Fingerprint of a history: how many tests, and which is the newest. */
+function histMark(h){ return h.tests.length + '|' + (h.tests[0] ? h.tests[0].id : ''); }
+/* What the last export captured: when it ran, plus the fingerprint at that moment.
+   Comparing fingerprints beats comparing timestamps, which would miss an import
+   that merged in tests older than the newest one already here. */
+function lastExport(){
+  try{ const v = JSON.parse(localStorage.getItem(EKEY)); return (v && v.at) ? v : null; }
+  catch(e){ return null; }
 }
-
-/* l'avviso serve a spingere verso l'esportazione: una volta esportato ha fatto il suo lavoro */
-function renderNota(){
-  let fatto = false;
-  try{ fatto = !!localStorage.getItem(EKEY); }catch(e){}
-  $('notaArch').classList.toggle('hide', fatto);
+/* State of the saved copy: 'empty' (nothing to lose), 'saved' (the last export
+   covers every test) or 'unsaved' (tests exist that no export has captured). */
+function histStatus(){
+  const hist = loadHist();
+  if(!hist.tests.length) return 'empty';
+  const mark = lastExport();
+  return mark && mark.fp === histMark(hist) ? 'saved' : 'unsaved';
+}
+const HIST_LABEL = {empty:'Nessun test da salvare', saved:'Storico salvato', unsaved:'Storico non salvato'};
+function renderHistStatus(){
+  const state = histStatus();
+  $('histStatus').className = 'histstatus ' + state;
+  let label = HIST_LABEL[state];
+  if(state === 'saved') label += ' il ' + shortDate(lastExport().at);
+  $('histStatusLabel').textContent = label;
+  /* the warning is only worth showing when there is something to lose */
+  $('histNote').classList.toggle('hide', state !== 'unsaved');
 }
 
 /* ---------- import / export ---------- */
-function exportArch(){
-  const a = loadArch();
-  a.aggiornato = new Date().toISOString();
-  const url = URL.createObjectURL(new Blob([JSON.stringify(a, null, 1)], {type:'application/json'}));
-  const el = document.createElement('a');
-  /* con la data nel nome gli export successivi non si sovrascrivono a vicenda */
-  el.href = url;
-  el.download = FILENAME.replace(/\.json$/, '-' + a.aggiornato.slice(0,10) + '.json');
-  el.click();
+function exportHist(){
+  const hist = loadHist();
+  hist.updated = new Date().toISOString();
+  const url = URL.createObjectURL(new Blob([JSON.stringify(hist, null, 1)], {type:'application/json'}));
+  const link = document.createElement('a');
+  /* dating the name keeps successive exports from overwriting each other */
+  link.href = url;
+  link.download = FILENAME.replace(/\.json$/, '-' + hist.updated.slice(0,10) + '.json');
+  link.click();
   setTimeout(() => URL.revokeObjectURL(url), 2000);
-  try{ localStorage.setItem(EKEY, a.aggiornato); }catch(e){}
-  renderNota();
+  try{ localStorage.setItem(EKEY, JSON.stringify({at: hist.updated, fp: histMark(hist)})); }catch(e){}
+  renderHistStatus();
 }
-function importArch(input){
-  const f = input.files && input.files[0];
-  if(!f) return;
-  const rd = new FileReader();
-  rd.onload = () => {
-    let inc;
-    try{ inc = JSON.parse(rd.result); }
-    catch(e){ alert('Il file non è un archivio JSON valido.'); input.value=''; return; }
-    if(!inc || !Array.isArray(inc.test)){ alert('Il file non contiene un archivio di test.'); input.value=''; return; }
-    const a = loadArch(), added = mergeArch(a, inc);
-    saveArch(a);
+function importHist(input){
+  const file = input.files && input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    let incoming;
+    try{ incoming = JSON.parse(reader.result); }
+    catch(e){ alert('Il file non è uno storico JSON valido.'); input.value=''; return; }
+    if(!incoming || !Array.isArray(incoming.tests)){ alert('Il file non contiene uno storico di test.'); input.value=''; return; }
+    const hist = loadHist(), added = mergeHist(hist, incoming);
+    saveHist(hist);
     alert(added ? `Importati ${added} test (i duplicati sono stati ignorati).`
-                : 'Nessun test nuovo: l\'archivio era già aggiornato.');
+                : 'Nessun test nuovo: lo storico era già aggiornato.');
     input.value = '';
   };
-  rd.readAsText(f);
+  reader.readAsText(file);
 }
 
-/* ---------- statistiche per domanda (derivate dall'archivio) ---------- */
-function qkey(q){ return q.id || (q.parte + '|' + q.sezione + '|' + q.n); }
-function statsFromArch(){
-  const s = {};
-  loadArch().test.forEach(t => (t.esiti || []).forEach(([k, ok]) => {
-    const r = s[k] || (s[k] = {ok:0, tot:0}); r.tot++; if(ok) r.ok++;
+/* ---------- per-question statistics, derived from the history ---------- */
+function qkey(q){ return q.id || (q.part + '|' + q.section + '|' + q.n); }
+function statsFromHist(){
+  const stats = {};
+  loadHist().tests.forEach(t => (t.outcomes || []).forEach(([k, ok]) => {
+    const r = stats[k] || (stats[k] = {ok:0, tot:0}); r.tot++; if(ok) r.ok++;
   }));
-  return s;
+  return stats;
 }
 function rateClass(p){ return p < 50 ? 'r-lo' : (p < 80 ? 'r-mid' : 'r-hi'); }
 function renderQStats(){
   const box = $('rQstats');
   if(S.mode !== 'topic'){ box.classList.add('hide'); return; }
-  const st = statsFromArch();
+  const stats = statsFromHist();
   const rows = S.items.map((it,i) => {
-    const r = st[qkey(it.q)] || {ok:0, tot:0};
+    const r = stats[qkey(it.q)] || {ok:0, tot:0};
     return {it, good: S.answers[i] === it.correct.l, r, p: r.tot ? Math.round(r.ok/r.tot*100) : 0};
   }).sort((a,b) => a.p - b.p || b.r.tot - a.r.tot);
   box.classList.remove('hide');
@@ -650,43 +662,43 @@ function renderQStats(){
     '<p class="empty" style="margin:-4px 0 14px">Calcolata su tutti i test svolti, compreso questo. ' +
     'Le domande con la percentuale più bassa sono in cima.</p>' +
     '<table class="qs"><tbody>' + rows.map(r => `<tr>
-      <td class="esito ${r.good?'ok':'ko'}">${r.good?'✓':'✗'}</td>
-      <td class="qt">${esc(r.it.q.testo.length > 100 ? r.it.q.testo.slice(0,100)+'…' : r.it.q.testo)}
-        <span class="ref">${esc(r.it.q.sezione.replace(/^Quiz \| /,''))} · n. ${r.it.q.n}</span></td>
+      <td class="mark ${r.good?'ok':'ko'}">${r.good?'✓':'✗'}</td>
+      <td class="qt">${esc(r.it.q.text.length > 100 ? r.it.q.text.slice(0,100)+'…' : r.it.q.text)}
+        <span class="ref">${esc(r.it.q.section.replace(/^Quiz \| /,''))} · n. ${r.it.q.n}</span></td>
       <td class="num rate ${rateClass(r.p)}">${r.p}%</td>
       <td class="num att">${r.r.ok}/${r.r.tot}</td></tr>`).join('') + '</tbody></table>';
 }
 
-/* ---------- tabella storico ---------- */
+/* ---------- history table ---------- */
 function clearHist(){
   if(!confirm('Cancellare lo storico dei test e le statistiche per domanda?')) return;
-  const a = emptyArch(); saveArch(a);
+  saveHist(emptyHist());
 }
-/* punteggio del test: 1 punto per risposta esatta nei quiz, mezzo punto su 30
-   nelle simulazioni. La percentuale è sempre il rapporto fra i due. */
-function punti(r){
-  const p = r.mode === 'exam' ? {ott: r.ok * 0.5, max: 30} : {ott: r.ok, max: r.tot};
-  p.pct = p.max ? Math.round(p.ott / p.max * 1000) / 10 : 0;
+/* test score: one point per correct answer in a quiz, half a point out of 30 in
+   a simulation. The percentage is always the ratio between the two. */
+function points(r){
+  const p = r.mode === 'exam' ? {earned: r.ok * 0.5, max: 30} : {earned: r.ok, max: r.tot};
+  p.pct = p.max ? Math.round(p.earned / p.max * 1000) / 10 : 0;
   return p;
 }
 function renderHist(){
-  const h = loadArch().test;
-  if(!h.length){ $('histTable').innerHTML = '<p class="empty">Nessun test svolto finora.</p>'; return; }
-  const rows = h.slice(0,15).map(r => {
+  renderHistStatus();
+  const tests = loadHist().tests;
+  if(!tests.length){ $('histTable').innerHTML = '<p class="empty">Nessun test svolto finora.</p>'; return; }
+  const rows = tests.slice(0,15).map(r => {
     const d = new Date(r.id);
-    const dd = d.toLocaleDateString('it-IT',{day:'2-digit',month:'2-digit',year:'2-digit'}) + ' ' +
-               d.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
-    const p = punti(r);
-    return `<tr><td>${dd}</td><td>${esc(r.title)}</td>
+    const stamp = shortDate(r.id) + ' ' + d.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
+    const p = points(r);
+    return `<tr><td>${stamp}</td><td>${esc(r.title)}</td>
       <td style="width:24%"><div class="barrow"><i style="width:${p.pct}%"></i></div></td>
-      <td class="num">${fmt30(p.ott)}/${fmt30(p.max)}</td><td class="num">${p.pct}%</td></tr>`;
+      <td class="num">${fmt30(p.earned)}/${fmt30(p.max)}</td><td class="num">${p.pct}%</td></tr>`;
   }).join('');
-  const exams = h.filter(r => r.mode === 'exam');
-  const avg = exams.length ? exams.reduce((s,r) => s + punti(r).ott, 0) / exams.length : null;
+  const exams = tests.filter(r => r.mode === 'exam');
+  const avg = exams.length ? exams.reduce((sum,r) => sum + points(r).earned, 0) / exams.length : null;
   $('histTable').innerHTML =
     `<table><thead><tr><th>Data</th><th>Test</th><th></th><th class="num">Punti</th><th class="num">%</th></tr></thead>
      <tbody>${rows}</tbody></table>
-     <p class="empty" style="margin:12px 0 0">${h.length} test svolti${avg!==null?` · media simulazioni ${fmt30(avg)}/30`:''}</p>`;
+     <p class="empty" style="margin:12px 0 0">${tests.length} test svolti${avg!==null?` · media simulazioni ${fmt30(avg)}/30`:''}</p>`;
 }
 
 function home(){ clearInterval(tick); S=null; renderHist(); show('home'); }
