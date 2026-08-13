@@ -43,7 +43,11 @@ itself when it runs out. It is scored out of 30 — half a point per correct ans
 the 21/30 pass mark highlighted.
 
 **Ripasso degli errori** (review mistakes) — replays only the questions you just got
-wrong.
+wrong. It is named after the subject those questions came from, or «Ripasso simulazione»
+when they span several.
+
+On every results screen, «Risultato per materia» and «Percentuale di successo per
+domanda» can be folded away if you only want the score.
 
 ## How it works
 
@@ -52,7 +56,9 @@ are the letter B (A 14%, C 27%, D 5%): keeping the original order would train yo
 remember the position instead of the content, inflating scores for nothing.
 
 **History accumulates.** Every test you hand in goes into the history with its date,
-score, time and per-question outcome. From that the page derives the per-question
+score, time and per-question outcome. Click any row to reopen that test's result — the
+score and both breakdown tables. It can't show which answers you picked, because those
+are not recorded, only whether each question was right. From that the page derives the per-question
 statistics and your average across exam simulations. The history can be exported and
 imported again, and merging is idempotent: importing the same file twice creates no
 duplicates.
@@ -67,9 +73,13 @@ it, use the buttons under the history: «Esporta» downloads a dated JSON file, 
 «Importa» loads one back — on any browser and any machine. Importing merges rather than
 replaces, and importing the same file twice adds nothing, so re-importing is always safe.
 
-The light next to those buttons tells you where you stand: grey when there are no results
+The badge next to those buttons tells you where you stand: grey when there are no results
 yet, green when your last export still covers every test, amber when tests have been added
-since. The warning about losing data only appears while the light is amber.
+since. The warning about losing data only appears while the badge is amber. Exporting an
+empty history does nothing but say so, rather than handing you a file with no results in
+it.
+
+Long histories are paged — show 10, 20, 50 or all at once.
 
 If you want this to be automatic, export into a folder your Dropbox, Drive or Syncthing
 client already syncs: because merging is idempotent, the same file can be imported on

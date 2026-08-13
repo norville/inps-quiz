@@ -12,6 +12,8 @@
   --text:#e8e6e1; --muted:#a09c94; --accent:#5fd3a8; --accent-dim:#2f6b57;
   --accent-hi:#7ce0bb; --on-accent:#12211c;
   --ok:#5fd3a8; --ko:#e8785f; --warn:#e8c25f; --on-ko:#2b1109;
+  --ok-bg:#1c3b31; --ok-fg:#7ce0bb; --warn-bg:#3b3320; --warn-fg:#e8c25f;
+  --pick:#7aa7f0; --pick-dim:#25344d;
 }
 /* operating-system theme, when no manual choice was made */
 @media (prefers-color-scheme: light){
@@ -21,6 +23,8 @@
   --text:#26241f; --muted:#6b665c; --accent:#1a7f5f; --accent-dim:#d3efe3;
   --accent-hi:#146a4f; --on-accent:#ffffff;
   --ok:#1a7f5f; --ko:#bf3f26; --warn:#996d0d; --on-ko:#ffffff;
+  --ok-bg:#d9f0e6; --ok-fg:#14603f; --warn-bg:#faeccb; --warn-fg:#7a5600;
+  --pick:#2f5fb8; --pick-dim:#dbe6fa;
   }
 }
 /* manual choice */
@@ -30,6 +34,8 @@
   --text:#26241f; --muted:#6b665c; --accent:#1a7f5f; --accent-dim:#d3efe3;
   --accent-hi:#146a4f; --on-accent:#ffffff;
   --ok:#1a7f5f; --ko:#bf3f26; --warn:#996d0d; --on-ko:#ffffff;
+  --ok-bg:#d9f0e6; --ok-fg:#14603f; --warn-bg:#faeccb; --warn-fg:#7a5600;
+  --pick:#2f5fb8; --pick-dim:#dbe6fa;
 }
 :root[data-theme="dark"]{
   color-scheme:dark;
@@ -37,6 +43,8 @@
   --text:#e8e6e1; --muted:#a09c94; --accent:#5fd3a8; --accent-dim:#2f6b57;
   --accent-hi:#7ce0bb; --on-accent:#12211c;
   --ok:#5fd3a8; --ko:#e8785f; --warn:#e8c25f; --on-ko:#2b1109;
+  --ok-bg:#1c3b31; --ok-fg:#7ce0bb; --warn-bg:#3b3320; --warn-fg:#e8c25f;
+  --pick:#7aa7f0; --pick-dim:#25344d;
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
@@ -67,11 +75,11 @@ select{font:inherit;background:var(--surface2);color:var(--text);border:1px soli
 label.chk{display:flex;gap:10px;align-items:flex-start;color:var(--muted);font-size:.88rem;cursor:pointer;margin-top:14px}
 label.chk input{margin-top:3px;accent-color:var(--accent);flex:none}
 .hide{display:none!important}
-.apphead{display:flex;justify-content:space-between;align-items:center;gap:12px;
+.appHead{display:flex;justify-content:space-between;align-items:center;gap:12px;
   padding-bottom:10px;margin-bottom:24px;border-bottom:1px solid var(--line)}
-.apphead .brand{font-weight:700;font-size:.95rem}
-.apphead .side{display:flex;align-items:center;gap:14px;color:var(--muted);font-size:.85rem}
-.apphead button{padding:6px 12px;font-size:.82rem;color:var(--muted)}
+.appHead .brand{font-size:.85rem}
+.appHead .side{display:flex;align-items:center;gap:14px;color:var(--muted);font-size:.85rem}
+.appHead button{padding:6px 12px;font-size:.82rem;color:var(--muted)}
 .eyebrow{color:var(--accent);font-size:.72rem;font-weight:700;text-transform:uppercase;
   letter-spacing:.09em;margin:0 0 8px}
 /* the two quiz cards stay the same height, with their buttons aligned at the bottom */
@@ -82,18 +90,18 @@ label.chk input{margin-top:3px;accent-color:var(--accent);flex:none}
 .bar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
 .timer{font-variant-numeric:tabular-nums;font-size:1.1rem;font-weight:600}
 .timer.low{color:var(--ko)}
-.qmeta{color:var(--muted);font-size:.82rem;margin-bottom:6px}
-.qtext{font-size:1.06rem;font-weight:600;margin:0 0 16px;line-height:1.45}
+.qMeta{color:var(--muted);font-size:.82rem;margin-bottom:6px}
+.questionText{font-size:1.06rem;font-weight:600;margin:0 0 16px;line-height:1.45}
 .opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;
   padding:12px 14px;margin-bottom:8px;background:var(--surface2);border:1px solid var(--line);border-radius:9px}
-.opt:hover{border-color:var(--accent)}
-.opt.sel{border-color:var(--accent);background:var(--accent-dim);color:var(--text)}
+.opt:hover{border-color:var(--pick)}
+.opt.sel{border-color:var(--pick);background:var(--pick-dim);color:var(--text)}
 .opt .l{font-weight:700;flex:none;width:1.2em}
 .nav{display:flex;gap:8px;justify-content:space-between;margin-top:20px}
 .dots{display:flex;flex-wrap:wrap;gap:5px;margin-top:20px;padding-top:18px;border-top:1px solid var(--line)}
 .dot{width:30px;height:30px;font-size:.75rem;padding:0;display:flex;align-items:center;justify-content:center}
 .dot.done{background:var(--accent-dim);border-color:var(--accent-dim);color:var(--text)}
-.dot.cur{border-color:var(--accent);color:var(--accent);font-weight:700}
+.dot.cur{border-color:var(--pick);background:var(--pick-dim);color:var(--pick);font-weight:700}
 
 /* results */
 .score{font-size:2.6rem;font-weight:700;line-height:1;margin:0}
@@ -104,8 +112,10 @@ th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line)}
 th{color:var(--muted);font-weight:600;font-size:.78rem;text-transform:uppercase;letter-spacing:.05em}
 td.num,th.num{text-align:right}
 td.num{font-variant-numeric:tabular-nums}
-.barrow{height:6px;background:var(--surface2);border-radius:3px;overflow:hidden;min-width:70px}
-.barrow i{display:block;height:100%;background:var(--accent)}
+tr.rowLink{cursor:pointer}
+tr.rowLink:hover td{background:var(--surface2)}
+.barRow{height:6px;background:var(--surface2);border-radius:3px;overflow:hidden;min-width:70px}
+.barRow i{display:block;height:100%;background:var(--accent)}
 .rev{border-left:3px solid var(--ko);padding:12px 0 12px 14px;margin-bottom:18px}
 .rev .qt{font-weight:600;margin-bottom:8px}
 .rev .a{font-size:.9rem;margin:3px 0}
@@ -113,32 +123,43 @@ td.num{font-variant-numeric:tabular-nums}
 .rev .a.ok{color:var(--ok)}
 .rev .src{color:var(--muted);font-size:.78rem;margin-top:6px}
 .empty{color:var(--muted);font-size:.9rem}
-.t30box{margin-top:14px;padding-top:14px;border-top:1px solid var(--line);display:flex;
+.t30Box{margin-top:14px;padding-top:14px;border-top:1px solid var(--line);display:flex;
   align-items:baseline;gap:12px;flex-wrap:wrap}
 .t30{font-size:1.6rem;font-weight:700;font-variant-numeric:tabular-nums}
 .t30.ok{color:var(--ok)} .t30.ko{color:var(--ko)}
-.t30lab{color:var(--muted);font-size:.88rem}
+.t30Lab{color:var(--muted);font-size:.88rem}
 .qs td{vertical-align:top}
 .qs .mark{width:1.4em;font-weight:700}
 .qs .mark.ok{color:var(--ok)} .qs .mark.ko{color:var(--ko)}
 .qs .qt{font-size:.88rem;line-height:1.4}
 .qs .ref{color:var(--muted);font-size:.75rem;display:block;margin-top:2px}
 .qs .rate{font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}
-.rate.r-lo{color:var(--ko)} .rate.r-mid{color:var(--warn)} .rate.r-hi{color:var(--ok)}
+.rate.rLo{color:var(--ko)} .rate.rMid{color:var(--warn)} .rate.rHi{color:var(--ok)}
 .qs .att{color:var(--muted);font-size:.78rem;white-space:nowrap}
-.histbar{display:flex;justify-content:space-between;align-items:center;gap:12px;
+.histFoot{display:flex;justify-content:space-between;align-items:center;gap:12px;
+  flex-wrap:wrap;margin-top:12px}
+.pager{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:.85rem}
+.pager select{width:auto;margin:0;padding:4px 8px;font-size:.85rem}
+.pager button{padding:2px 10px;font-size:.9rem;line-height:1.3}
+.histBar{display:flex;justify-content:space-between;align-items:center;gap:12px;
   flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
-.histstatus{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:.85rem}
-.histstatus .led{width:9px;height:9px;border-radius:50%;background:var(--muted);flex:none}
-.histstatus.saved .led{background:var(--ok)}
-.histstatus.unsaved .led{background:var(--warn)}
-.histbtns{display:flex;gap:8px;flex-wrap:wrap}
-.histbtns button{padding:7px 12px;font-size:.84rem}
+/* the base rule carries the "nothing to lose" look, so isEmpty needs no rule.
+   The modifiers are prefixed because a bare .empty/.saved would collide with
+   the global .empty utility further down. */
+.statusBadge{display:inline-flex;align-items:center;gap:8px;padding:5px 12px;border-radius:999px;
+  font-size:.82rem;font-weight:600;border:1px solid transparent;
+  background:var(--surface2);color:var(--muted);border-color:var(--line)}
+.statusBadge .led{width:9px;height:9px;border-radius:50%;background:currentColor;flex:none}
+.statusBadge.isSaved{background:var(--ok-bg);color:var(--ok-fg);border-color:transparent}
+.statusBadge.isUnsaved{background:var(--warn-bg);color:var(--warn-fg);border-color:transparent}
+.histBtns{display:flex;gap:8px;flex-wrap:wrap}
+.histBtns button{padding:7px 12px;font-size:.84rem}
 code{background:var(--surface2);padding:1px 6px;border-radius:5px;font-size:.88em}
 details.card summary{cursor:pointer;font-weight:600;list-style:none}
 details.card summary::-webkit-details-marker{display:none}
 details.card summary::before{content:'▸ ';color:var(--accent)}
 details.card[open] summary::before{content:'▾ '}
+details.card > :not(summary){margin-top:14px}
 pre{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:14px;
   overflow-x:auto;font-size:.8rem;line-height:1.5;margin:14px 0 0}
 .err{border-left-color:var(--ko)!important}
@@ -150,10 +171,9 @@ pre{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:
 <body>
 <div class="wrap">
 
-<header class="apphead">
-  <span class="brand">Quiz INPS 499</span>
+<header class="appHead">
+  <span class="brand">Assistenti informatici</span>
   <span class="side">
-    <span>Assistenti informatici</span>
     <button id="btnTheme" onclick="cycleTheme()" title="Cambia tema"></button>
   </span>
 </header>
@@ -170,7 +190,7 @@ pre{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:
       file da sola: servila via HTTP (<code>python3 -m http.server</code> nella cartella) oppure
       caricala a mano col pulsante qui sotto.
     </div>
-    <div class="histbtns" style="margin-top:16px">
+    <div class="histBtns" style="margin-top:16px">
       <button class="primary" onclick="document.getElementById('qFile').click()">Carica il file delle domande</button>
     </div>
     <div class="note err hide" id="loadErr"></div>
@@ -239,9 +259,9 @@ pre{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:
       Se passi a un altro browser, o clicchi su <b>Cancella</b>, <b>i dati vanno persi</b>.
       Usa <b>Esporta</b> per salvarne una copia, oppure <b>Importa</b> per caricarne una.
     </div>
-    <div class="histbar">
-      <span class="histstatus" id="histStatus"><span class="led"></span><span id="histStatusLabel"></span></span>
-      <span class="histbtns">
+    <div class="histBar">
+      <span class="statusBadge" id="histStatus"><span class="led"></span><span id="histStatusLabel"></span></span>
+      <span class="histBtns">
         <button class="primary" onclick="document.getElementById('impFile').click()">Importa</button>
         <button class="primary" onclick="exportHist()">Esporta</button>
         <button class="danger" onclick="clearHist()">Cancella</button>
@@ -254,12 +274,12 @@ pre{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:
 <!-- ===== QUIZ ===== -->
 <section id="quiz" class="hide">
   <div class="bar">
-    <div><strong id="qTitle"></strong> <span class="qmeta" id="qProgress"></span></div>
+    <div><strong id="qTitle"></strong> <span class="qMeta" id="qProgress"></span></div>
     <div class="timer" id="timer">00:00</div>
   </div>
   <div class="card">
-    <div class="qmeta" id="qSource"></div>
-    <p class="qtext" id="qText"></p>
+    <div class="qMeta" id="qSource"></div>
+    <p class="questionText" id="qText"></p>
     <div id="qOpts"></div>
     <div class="nav">
       <button class="ghost" id="btnPrev" onclick="go(-1)">← Precedente</button>
@@ -279,10 +299,16 @@ pre{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:
     <h2 id="rTitle"></h2>
     <p class="score" id="rScore"></p>
     <p class="pct" id="rPct"></p>
-    <div class="t30box hide" id="rT30"></div>
+    <div class="t30Box hide" id="rT30"></div>
   </div>
-  <div class="card" id="rParts"></div>
-  <div class="card hide" id="rQstats"></div>
+  <details class="card" id="rParts" open>
+    <summary>Risultato per materia</summary>
+    <div id="rPartsBody"></div>
+  </details>
+  <details class="card" id="rQstats" open>
+    <summary>Percentuale di successo per domanda</summary>
+    <div id="rQstatsBody"></div>
+  </details>
   <div class="nav" style="margin-bottom:24px">
     <button class="ghost" onclick="home()">← Torna all'inizio</button>
     <button class="primary" id="btnReview" onclick="startReview()">Ripassa gli errori</button>
@@ -310,6 +336,7 @@ function esc(s){const d=document.createElement('div');d.textContent=s;return d.i
 function fmt30(v){ return (Math.round(v*100)/100).toFixed(2).replace(/\.?0+$/,'').replace('.',','); }
 function mmss(s){const m=Math.floor(s/60),x=s%60;return String(m).padStart(2,'0')+':'+String(x).padStart(2,'0');}
 function shortDate(v){ return new Date(v).toLocaleDateString('it-IT',{day:'2-digit',month:'2-digit',year:'2-digit'}); }
+function stamp(v){ return shortDate(v) + ' ' + new Date(v).toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'}); }
 function show(id){['loader','home','quiz','results'].forEach(s=>$(s).classList.toggle('hide',s!==id));window.scrollTo(0,0);}
 
 /* ---------- theme ---------- */
@@ -357,6 +384,7 @@ function validate(d){
 
 function setData(d){
   QUESTIONS = d.questions;
+  QBYKEY = null;
   const seen = new Set();
   PARTS = (Array.isArray(d.parts) ? d.parts : []).filter(p => p && p.id && !seen.has(p.id) && seen.add(p.id));
   QUESTIONS.forEach(q => { if(!seen.has(q.part)){ seen.add(q.part);
@@ -428,7 +456,7 @@ function prep(list){
 function startTopic(){
   const id = $('selPart').value;
   const pool = QUESTIONS.filter(q => q.part === id);
-  begin(prep(shuffle(pool)), id, 'topic', 0);
+  begin(prep(shuffle(pool)), 'Quiz ' + id, 'topic', 0);
 }
 
 function startExam(){
@@ -451,7 +479,11 @@ function startExam(){
 function startReview(){
   const wrong = S.items.filter((it,i) => S.answers[i] !== it.correct.l);
   if(!wrong.length) return;
-  begin(prep(shuffle(wrong.map(w => w.q))), 'Ripasso errori', 'review', 0);
+  /* name the part when the errors all come from one; a review of a simulation
+     usually spans several, and then there is no single part to name */
+  const parts = new Set(wrong.map(w => w.q.part));
+  const title = parts.size === 1 ? 'Ripasso ' + [...parts][0] : 'Ripasso simulazione';
+  begin(prep(shuffle(wrong.map(w => w.q))), title, 'review', 0);
 }
 
 function begin(items, title, mode, limit){
@@ -496,14 +528,8 @@ function submit(auto){
      !confirm(`Ci sono ancora ${unanswered} domande senza risposta. Consegnare comunque?`)) return;
   clearInterval(tick);
 
-  let ok = 0; const perPart = {};
-  S.items.forEach((it,i) => {
-    const good = S.answers[i] === it.correct.l;
-    if(good) ok++;
-    const id = it.q.part;
-    perPart[id] = perPart[id] || {ok:0, tot:0};
-    perPart[id].tot++; if(good) perPart[id].ok++;
-  });
+  const outcomes = S.items.map((it,i) => [qkey(it.q), S.answers[i] === it.correct.l ? 1 : 0]);
+  const ok = outcomes.reduce((n,[,good]) => n + good, 0);
   const tot = S.items.length, pct = Math.round(ok/tot*1000)/10;
   const t30 = ok * 0.5;   /* exam simulation: half a point per correct answer, out of 30 */
 
@@ -515,19 +541,12 @@ function submit(auto){
     const pass = t30 >= 21;
     box.classList.remove('hide');
     box.innerHTML = `<span class="t30 ${pass?'ok':'ko'}">${fmt30(t30)} / 30</span>
-      <span class="t30lab">${pass?'sopra la soglia di idoneità':'sotto la soglia di idoneità'} · 21/30</span>`;
+      <span class="t30Lab">${pass?'sopra la soglia di idoneità':'sotto la soglia di idoneità'} · 21/30</span>`;
   } else box.classList.add('hide');
-
-  $('rParts').innerHTML = '<h3 style="margin-top:0">Risultato per materia</h3><table><tbody>' +
-    PARTS.filter(p => perPart[p.id]).map(p => {
-      const d = perPart[p.id], width = Math.round(d.ok/d.tot*100);
-      return `<tr><td>${esc(p.id)}</td>
-        <td style="width:40%"><div class="barrow"><i style="width:${width}%"></i></div></td>
-        <td class="num">${d.ok}/${d.tot}</td></tr>`;
-    }).join('') + '</tbody></table>';
 
   const wrong = S.items.map((it,i) => ({it, given:S.answers[i]})).filter(e => e.given !== e.it.correct.l);
   $('btnReview').classList.toggle('hide', wrong.length===0);
+  $('rErrTitle').classList.remove('hide');
   $('rErrTitle').textContent = wrong.length ? `Errori (${wrong.length})` : 'Nessun errore';
   $('rErrors').innerHTML = wrong.length ? wrong.map(e => {
     const given = e.given ? e.it.opts.find(o => o.l===e.given) : null;
@@ -542,11 +561,13 @@ function submit(auto){
   const hist = loadHist();
   hist.tests.unshift({
     id: new Date().toISOString(), mode: S.mode, title: S.title,
-    ok, tot, pct, sec: S.elapsed, t30: S.mode === 'exam' ? t30 : null,
-    outcomes: S.items.map((it,i) => [qkey(it.q), S.answers[i] === it.correct.l ? 1 : 0])
+    ok, tot, pct, sec: S.elapsed, t30: S.mode === 'exam' ? t30 : null, outcomes
   });
   saveHist(hist);
-  renderQStats();
+  /* both cards are built from the outcomes, so the results screen and a stored
+     test rendered later go through exactly the same code */
+  $('rPartsBody').innerHTML = partsTable(outcomes);
+  $('rQstatsBody').innerHTML = qstatsTable(outcomes);
   show('results');
 }
 
@@ -589,16 +610,17 @@ function lastExport(){
 }
 /* State of the saved copy: 'empty' (nothing to lose), 'saved' (the last export
    covers every test) or 'unsaved' (tests exist that no export has captured). */
-function histStatus(){
+function histState(){
   const hist = loadHist();
   if(!hist.tests.length) return 'empty';
   const mark = lastExport();
   return mark && mark.fp === histMark(hist) ? 'saved' : 'unsaved';
 }
 const HIST_LABEL = {empty:'Nessun test da salvare', saved:'Storico salvato', unsaved:'Storico non salvato'};
+const BADGE_STATE = {empty:'isEmpty', saved:'isSaved', unsaved:'isUnsaved'};
 function renderHistStatus(){
-  const state = histStatus();
-  $('histStatus').className = 'histstatus ' + state;
+  const state = histState();
+  $('histStatus').className = 'statusBadge ' + BADGE_STATE[state];
   let label = HIST_LABEL[state];
   if(state === 'saved') label += ' il ' + shortDate(lastExport().at);
   $('histStatusLabel').textContent = label;
@@ -609,6 +631,8 @@ function renderHistStatus(){
 /* ---------- import / export ---------- */
 function exportHist(){
   const hist = loadHist();
+  /* an empty file would look like a valid backup while holding nothing */
+  if(!hist.tests.length){ alert('Non c\'è ancora niente da esportare: svolgi almeno un test.'); return; }
   hist.updated = new Date().toISOString();
   const url = URL.createObjectURL(new Blob([JSON.stringify(hist, null, 1)], {type:'application/json'}));
   const link = document.createElement('a');
@@ -640,6 +664,12 @@ function importHist(input){
 
 /* ---------- per-question statistics, derived from the history ---------- */
 function qkey(q){ return q.id || (q.part + '|' + q.section + '|' + q.n); }
+/* qkey -> question, so a stored test can be rendered from its outcomes alone */
+let QBYKEY = null;
+function questionsByKey(){
+  if(!QBYKEY){ QBYKEY = {}; QUESTIONS.forEach(q => QBYKEY[qkey(q)] = q); }
+  return QBYKEY;
+}
 function statsFromHist(){
   const stats = {};
   loadHist().tests.forEach(t => (t.outcomes || []).forEach(([k, ok]) => {
@@ -647,29 +677,59 @@ function statsFromHist(){
   }));
   return stats;
 }
-function rateClass(p){ return p < 50 ? 'r-lo' : (p < 80 ? 'r-mid' : 'r-hi'); }
-function renderQStats(){
-  const box = $('rQstats');
-  if(S.mode !== 'topic'){ box.classList.add('hide'); return; }
-  const stats = statsFromHist();
-  const rows = S.items.map((it,i) => {
-    const r = stats[qkey(it.q)] || {ok:0, tot:0};
-    return {it, good: S.answers[i] === it.correct.l, r, p: r.tot ? Math.round(r.ok/r.tot*100) : 0};
+function rateClass(p){ return p < 50 ? 'rLo' : (p < 80 ? 'rMid' : 'rHi'); }
+
+/* {partId: {ok, tot}} from [[qkey, 0|1], …]; keys the bank no longer knows are skipped */
+function partsFrom(outcomes){
+  const byKey = questionsByKey(), perPart = {};
+  outcomes.forEach(([k, good]) => {
+    const q = byKey[k]; if(!q) return;
+    const d = perPart[q.part] = perPart[q.part] || {ok:0, tot:0};
+    d.tot++; if(good) d.ok++;
+  });
+  return perPart;
+}
+function partsTable(outcomes){
+  const perPart = partsFrom(outcomes);
+  const rows = PARTS.filter(p => perPart[p.id]).map(p => {
+    const d = perPart[p.id], width = Math.round(d.ok/d.tot*100);
+    return `<tr><td>${esc(p.id)}</td>
+      <td style="width:40%"><div class="barRow"><i style="width:${width}%"></i></div></td>
+      <td class="num">${d.ok}/${d.tot}</td></tr>`;
+  }).join('');
+  return rows ? `<table><tbody>${rows}</tbody></table>`
+              : '<p class="empty">Le domande di questo test non sono più nella banca dati.</p>';
+}
+
+/* per-question table: how this test went, next to the all-time success rate */
+function qstatsTable(outcomes){
+  const stats = statsFromHist(), byKey = questionsByKey();
+  const rows = outcomes.map(([k, good]) => {
+    const r = stats[k] || {ok:0, tot:0};
+    return {q: byKey[k], key: k, good: !!good, r, p: r.tot ? Math.round(r.ok/r.tot*100) : 0};
   }).sort((a,b) => a.p - b.p || b.r.tot - a.r.tot);
-  box.classList.remove('hide');
-  box.innerHTML =
-    '<h3 style="margin-top:0">Percentuale di successo per domanda</h3>' +
-    '<p class="empty" style="margin:-4px 0 14px">Calcolata su tutti i test svolti, compreso questo. ' +
+  return '<p class="empty" style="margin:0 0 14px">Calcolata su tutti i test svolti, compreso questo. ' +
     'Le domande con la percentuale più bassa sono in cima.</p>' +
-    '<table class="qs"><tbody>' + rows.map(r => `<tr>
+    '<table class="qs"><tbody>' + rows.map(r => {
+      const text = r.q ? r.q.text : r.key;
+      const ref = r.q ? r.q.section.replace(/^Quiz \| /,'') + ' · n. ' + r.q.n
+                      : 'domanda non più nella banca dati';
+      return `<tr>
       <td class="mark ${r.good?'ok':'ko'}">${r.good?'✓':'✗'}</td>
-      <td class="qt">${esc(r.it.q.text.length > 100 ? r.it.q.text.slice(0,100)+'…' : r.it.q.text)}
-        <span class="ref">${esc(r.it.q.section.replace(/^Quiz \| /,''))} · n. ${r.it.q.n}</span></td>
+      <td class="qt">${esc(text.length > 100 ? text.slice(0,100)+'…' : text)}
+        <span class="ref">${esc(ref)}</span></td>
       <td class="num rate ${rateClass(r.p)}">${r.p}%</td>
-      <td class="num att">${r.r.ok}/${r.r.tot}</td></tr>`).join('') + '</tbody></table>';
+      <td class="num att">${r.r.ok}/${r.r.tot}</td></tr>`;
+    }).join('') + '</tbody></table>';
 }
 
 /* ---------- history table ---------- */
+/* page size 0 means "all"; the page is clamped at render time, so deleting or
+   importing tests can never strand the view past the end of the list */
+const PAGE_SIZES = [10, 20, 50, 0];
+let histSize = 10, histPage = 0;
+function setHistSize(v){ histSize = +v; histPage = 0; renderHist(); }
+function histGo(d){ histPage += d; renderHist(); }
 function clearHist(){
   if(!confirm('Cancellare lo storico dei test e le statistiche per domanda?')) return;
   saveHist(emptyHist());
@@ -685,20 +745,57 @@ function renderHist(){
   renderHistStatus();
   const tests = loadHist().tests;
   if(!tests.length){ $('histTable').innerHTML = '<p class="empty">Nessun test svolto finora.</p>'; return; }
-  const rows = tests.slice(0,15).map(r => {
-    const d = new Date(r.id);
-    const stamp = shortDate(r.id) + ' ' + d.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
+  const size = histSize || tests.length;
+  const pages = Math.max(1, Math.ceil(tests.length / size));
+  histPage = Math.min(Math.max(0, histPage), pages - 1);
+  const from = histPage * size;
+  const rows = tests.slice(from, from + size).map(r => {
     const p = points(r);
-    return `<tr><td>${stamp}</td><td>${esc(r.title)}</td>
-      <td style="width:24%"><div class="barrow"><i style="width:${p.pct}%"></i></div></td>
+    return `<tr class="rowLink" onclick="showTest('${esc(r.id)}')" title="Apri il risultato">
+      <td>${stamp(r.id)}</td><td>${esc(r.title)}</td>
+      <td style="width:24%"><div class="barRow"><i style="width:${p.pct}%"></i></div></td>
       <td class="num">${fmt30(p.earned)}/${fmt30(p.max)}</td><td class="num">${p.pct}%</td></tr>`;
   }).join('');
   const exams = tests.filter(r => r.mode === 'exam');
   const avg = exams.length ? exams.reduce((sum,r) => sum + points(r).earned, 0) / exams.length : null;
+  const sizeOpts = PAGE_SIZES.map(v =>
+    `<option value="${v}"${v===histSize?' selected':''}>${v || 'tutti'}</option>`).join('');
+  const nav = pages > 1
+    ? `<button onclick="histGo(-1)"${histPage===0?' disabled':''}>‹</button>
+       <span>${histPage+1} / ${pages}</span>
+       <button onclick="histGo(1)"${histPage===pages-1?' disabled':''}>›</button>` : '';
   $('histTable').innerHTML =
     `<table><thead><tr><th>Data</th><th>Test</th><th></th><th class="num">Punti</th><th class="num">%</th></tr></thead>
      <tbody>${rows}</tbody></table>
-     <p class="empty" style="margin:12px 0 0">${tests.length} test svolti${avg!==null?` · media simulazioni ${fmt30(avg)}/30`:''}</p>`;
+     <div class="histFoot">
+       <span class="empty">${tests.length} test svolti${avg!==null?` · media simulazioni ${fmt30(avg)}/30`:''}</span>
+       <span class="pager">Mostra <select onchange="setHistSize(this.value)">${sizeOpts}</select> ${nav}</span>
+     </div>`;
+}
+
+/* a test reopened from the history shows the same screen as a fresh result,
+   minus the parts that need the answers themselves: those are not recorded,
+   only whether each question was right, so there is no error list to replay */
+function showTest(id){
+  const t = loadHist().tests.find(x => x.id === id);
+  if(!t) return;
+  const p = points(t);
+  $('rTitle').textContent = `${t.title} · ${stamp(t.id)}`;
+  $('rScore').innerHTML = `${t.ok} <small>/ ${t.tot} corrette</small>`;
+  $('rPct').textContent = `${t.pct}% · ${t.tot - t.ok} errate · tempo ${mmss(t.sec || 0)}`;
+  const box = $('rT30');
+  if(t.mode === 'exam'){
+    const pass = p.earned >= 21;
+    box.classList.remove('hide');
+    box.innerHTML = `<span class="t30 ${pass?'ok':'ko'}">${fmt30(p.earned)} / 30</span>
+      <span class="t30Lab">${pass?'sopra la soglia di idoneità':'sotto la soglia di idoneità'} · 21/30</span>`;
+  } else box.classList.add('hide');
+  $('rPartsBody').innerHTML = partsTable(t.outcomes || []);
+  $('rQstatsBody').innerHTML = qstatsTable(t.outcomes || []);
+  $('btnReview').classList.add('hide');
+  $('rErrTitle').classList.add('hide');
+  $('rErrors').innerHTML = '';
+  show('results');
 }
 
 function home(){ clearInterval(tick); S=null; renderHist(); show('home'); }
